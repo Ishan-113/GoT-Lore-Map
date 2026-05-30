@@ -214,9 +214,13 @@ function renderSearch(query) {
     const card = document.createElement('div');
     card.className = 'result-card';
     card.innerHTML =
-      '<div class="result-sigil">' + item.sigil + '</div>' +
-      '<div class="result-type">' + item.type + '</div>' +
-      '<div class="result-name">' + item.display + '</div>' +
+      '<div class="result-card-top">' +
+        '<div class="result-card-text">' +
+          '<div class="result-type">' + item.type + '</div>' +
+          '<div class="result-name">' + item.display + '</div>' +
+        '</div>' +
+        '<div class="result-sigil">' + item.sigil + '</div>' +
+      '</div>' +
       '<div class="result-sub">' + item.sub + '</div>';
     card.addEventListener('click', () => {
       if (item.type === 'house') { currentHouse = item.key; navigateTo('house'); }
