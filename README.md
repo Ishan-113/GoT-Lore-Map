@@ -45,7 +45,7 @@ goat/
 
 ## 🚀 Live Demo
 
-> Deployed on Vercel — [View Live Site](#)
+> Deployed on Vercel — [go-t-lore-map.vercel.app](https://go-t-lore-map.vercel.app/)
 
 ---
 
