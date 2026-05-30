@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English+SC&family=IM+Fell+English:ital@0;1&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --gold:#c9a84c;--gold-light:#f0d080;--gold-dark:#8a6a1a;
+  --parchment:#d4b483;--parchment-dark:#a07840;--parchment-bg:#1a0e05;
+  --blood:#8b1a1a;--ink:#1a0a00;--ash:#2a1a0a;
+  --text-gold:#e8c87a;--text-parchment:#d4b483;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0500;cursor:default}
+body{font-family:'IM Fell English SC',serif}
+
+/* ===== PAGES ===== */
+.page{position:fixed;inset:0;display:none;opacity:0;transition:opacity .8s ease}
+.page.active{display:flex;opacity:1}
+
+/* ===== HOME ===== */
+#page-home{background:#0a0500;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.home-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.18;filter:sepia(1) contrast(1.2);transform:scale(1.05)}
+.home-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 70% 70% at 50% 50%,transparent 30%,#0a0500 80%)}
+.home-content{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:24px;animation:homeIn 2s ease forwards}
+@keyframes homeIn{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
+.sigil-ring{width:160px;height:160px;position:relative;display:flex;align-items:center;justify-content:center;animation:rotateSlow 40s linear infinite}
+.sigil-ring svg{position:absolute;inset:0;width:100%;height:100%}
+.sigil-center{position:absolute;width:60px;height:60px;display:flex;align-items:center;justify-content:center;font-size:36px;animation:rotateSlow 40s linear infinite reverse}
+@keyframes rotateSlow{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.home-title{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:clamp(2rem,5vw,4rem);font-weight:900;text-align:center;text-shadow:0 0 40px rgba(201,168,76,.6),0 2px 4px #000;letter-spacing:.12em;line-height:1.2}
+.home-subtitle{font-family:'Cinzel',serif;color:var(--parchment);font-size:clamp(.8rem,1.5vw,1.1rem);letter-spacing:.4em;text-transform:uppercase;opacity:.8}
+.divider-line{display:flex;align-items:center;gap:16px;width:400px;max-width:80vw}
+.divider-line::before,.divider-line::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.divider-gem{width:8px;height:8px;background:var(--gold);transform:rotate(45deg);flex-shrink:0}
+.enter-btn{font-family:'Cinzel',serif;font-size:1rem;letter-spacing:.3em;color:var(--ink);background:linear-gradient(135deg,var(--gold-light),var(--gold),var(--gold-dark));border:none;padding:14px 48px;cursor:pointer;clip-path:polygon(12px 0%,calc(100% - 12px) 0%,100% 12px,100% calc(100% - 12px),calc(100% - 12px) 100%,12px 100%,0% calc(100% - 12px),0% 12px);font-weight:700;text-transform:uppercase;transition:all .3s;box-shadow:0 0 20px rgba(201,168,76,.4)}
+.enter-btn:hover{transform:scale(1.05);box-shadow:0 0 40px rgba(201,168,76,.7),0 0 80px rgba(201,168,76,.3)}
+.corner-ornament{position:absolute;width:80px;height:80px;border-color:var(--gold-dark);border-style:solid;opacity:.5}
+.corner-ornament.tl{top:20px;left:20px;border-width:2px 0 0 2px}
+.corner-ornament.tr{top:20px;right:20px;border-width:2px 2px 0 0}
+.corner-ornament.bl{bottom:20px;left:20px;border-width:0 0 2px 2px}
+.corner-ornament.br{bottom:20px;right:20px;border-width:0 2px 2px 0}
+
+/* ===== MAP ===== */
+#page-map{flex-direction:column;background:#08040a;overflow:hidden}
+.map-header{position:relative;z-index:10;height:56px;min-height:56px;background:linear-gradient(180deg,rgba(10,5,0,.98),rgba(10,5,0,.85));border-bottom:1px solid var(--gold-dark);display:flex;align-items:center;justify-content:space-between;padding:0 24px;gap:16px}
+.map-header-title{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:1.1rem;letter-spacing:.15em;white-space:nowrap}
+.nav-tabs{display:flex;gap:4px}
+.nav-tab{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;color:var(--text-parchment);background:transparent;border:1px solid transparent;padding:6px 16px;cursor:pointer;transition:all .3s;text-transform:uppercase;opacity:.7}
+.nav-tab:hover,.nav-tab.active{color:var(--gold-light);border-color:var(--gold-dark);background:rgba(201,168,76,.08);opacity:1}
+.back-btn-sm{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);background:transparent;border:1px solid var(--gold-dark);padding:6px 14px;cursor:pointer;transition:all .3s;text-transform:uppercase;opacity:.8}
+.back-btn-sm:hover{opacity:1;background:rgba(201,168,76,.1)}
+.map-container{position:relative;flex:1;overflow:hidden;cursor:crosshair}
+.map-img{width:100%;height:100%;object-fit:cover;filter:sepia(.3) contrast(1.1) brightness(.9)}
+.map-pin{position:absolute;transform:translate(-50%,-50%);cursor:pointer;z-index:5;display:flex;flex-direction:column;align-items:center;gap:2px;transition:all .3s}
+.pin-dot{width:10px;height:10px;background:var(--gold);border:2px solid var(--gold-light);border-radius:50%;box-shadow:0 0 8px rgba(201,168,76,.8);transition:all .3s}
+.pin-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.08em;color:var(--gold-light);text-shadow:0 1px 3px #000,0 0 6px #000;white-space:nowrap;background:rgba(0,0,0,.5);padding:1px 5px;border-radius:2px;pointer-events:none}
+.map-pin:hover .pin-dot{transform:scale(1.6);box-shadow:0 0 20px rgba(201,168,76,1)}
+.map-pin:hover .pin-label{color:#fff}
+.pin-sigil{font-size:14px;line-height:1;filter:drop-shadow(0 0 4px rgba(0,0,0,.8))}
+.map-tooltip{position:absolute;z-index:20;pointer-events:none;background:linear-gradient(135deg,rgba(20,10,0,.95),rgba(30,15,5,.98));border:1px solid var(--gold-dark);padding:14px 18px;min-width:200px;max-width:260px;display:none}
+.map-tooltip.visible{display:block}
+.tooltip-house{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;color:var(--gold);margin-bottom:4px}
+.tooltip-location{font-family:'Cinzel Decorative',serif;font-size:1rem;color:var(--gold-light);margin-bottom:8px}
+.tooltip-desc{font-family:'IM Fell English',serif;font-style:italic;font-size:.8rem;color:var(--text-parchment);line-height:1.5;margin-bottom:10px;opacity:.85}
+.tooltip-action{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;opacity:.7}
+.map-legend{position:absolute;bottom:16px;left:16px;z-index:10;background:rgba(10,5,0,.85);border:1px solid var(--gold-dark);padding:12px 16px;min-width:160px}
+.legend-title{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--gold);margin-bottom:8px;text-transform:uppercase}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:4px;cursor:pointer}
+.legend-text{font-family:'IM Fell English SC',serif;font-size:.65rem;color:var(--text-parchment)}
+
+/* ===== HOUSE BOOK ===== */
+#page-house{background:#08040a;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.house-bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.07;filter:sepia(1)}
+.house-bg-vignette{position:absolute;inset:0;background:radial-gradient(ellipse 80% 80% at 50% 50%,rgba(8,4,10,.3) 0%,rgba(8,4,10,.98) 70%)}
+.book-wrapper{position:relative;z-index:2;width:min(900px,95vw);height:min(600px,85vh);perspective:1400px}
+.book{width:100%;height:100%;position:relative;transform-style:preserve-3d;animation:bookOpen 1s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes bookOpen{from{transform:rotateY(-30deg) scale(.92);opacity:0}to{transform:rotateY(0deg) scale(1);opacity:1}}
+.book-spine{position:absolute;left:50%;top:0;bottom:0;width:40px;transform:translateX(-50%);background:linear-gradient(90deg,#3a1a05,#6b3015,#8a4020,#6b3015,#3a1a05);z-index:10;box-shadow:0 0 20px rgba(0,0,0,.8)}
+.book-spine-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-90deg);font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.3em;color:var(--gold);white-space:nowrap;text-transform:uppercase}
+.book-page{position:absolute;top:0;bottom:0;width:calc(50% - 20px);overflow:hidden;padding:32px;display:flex;flex-direction:column}
+.book-page.left{left:0;border-radius:4px 0 0 4px;background:linear-gradient(135deg,#d4b483,#c5a070,#b8904a,#c5a070);box-shadow:inset -10px 0 20px rgba(0,0,0,.2),-2px 0 8px rgba(0,0,0,.3)}
+.book-page.right{right:0;border-radius:0 4px 4px 0;background:linear-gradient(135deg,#c5a070,#d4b483,#c5a070);box-shadow:inset 10px 0 20px rgba(0,0,0,.15),2px 0 8px rgba(0,0,0,.3)}
+.page-lines{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.page-line{position:absolute;left:32px;right:32px;height:1px;background:rgba(100,60,10,.12)}
+.house-emblem-area{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;gap:16px}
+.house-sigil-large{font-size:72px;line-height:1;filter:drop-shadow(0 4px 8px rgba(0,0,0,.4));animation:sigilFloat 3s ease-in-out infinite}
+@keyframes sigilFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.house-name-book{font-family:'Cinzel Decorative',serif;font-size:1.6rem;font-weight:900;color:var(--ink);text-align:center;line-height:1.2}
+.house-words{font-family:'IM Fell English',serif;font-style:italic;font-size:1rem;color:#5a3010;text-align:center;opacity:.85}
+.house-divider{width:80%;height:1px;background:linear-gradient(90deg,transparent,#8a5020,transparent);margin:4px 0}
+.house-region{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.3em;color:#6a3a10;text-transform:uppercase}
+.characters-header{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.3em;color:#5a2a05;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.characters-header::after{content:'';flex:1;height:1px;background:rgba(90,42,5,.3)}
+.char-card{display:flex;align-items:center;gap:12px;padding:10px;margin-bottom:8px;cursor:pointer;background:rgba(180,120,60,.15);border:1px solid rgba(140,80,20,.2);border-radius:2px;transition:all .3s}
+.char-card:hover{background:rgba(180,120,60,.35);border-color:rgba(140,80,20,.5);transform:translateX(4px)}
+.char-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#8a5020,#5a2a05);border:2px solid rgba(140,80,20,.4);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.char-info{flex:1;min-width:0}
+.char-name{font-family:'Cinzel',serif;font-size:.75rem;color:#2a1000;font-weight:600}
+.char-role{font-family:'IM Fell English',serif;font-style:italic;font-size:.68rem;color:#5a3010;opacity:.8}
+.char-status{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.1em;padding:2px 6px;border-radius:1px}
+.char-status.alive{background:rgba(20,80,20,.2);color:#1a4a1a}
+.char-status.dead{background:rgba(80,10,10,.2);color:#5a0a0a}
+.char-status.unknown{background:rgba(80,60,10,.2);color:#4a3a0a}
+.book-page-num{position:absolute;bottom:14px;font-family:'IM Fell English SC',serif;font-size:.65rem;color:rgba(90,50,10,.5)}
+.book-page.left .book-page-num{left:32px}
+.book-page.right .book-page-num{right:32px}
+.house-nav{position:relative;z-index:2;display:flex;gap:16px;margin-top:16px}
+.house-nav-btn{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.2em;color:var(--gold);background:transparent;border:1px solid var(--gold-dark);padding:8px 20px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.house-nav-btn:hover{background:rgba(201,168,76,.1);color:var(--gold-light)}
+
+/* ===== CHARACTER ===== */
+#page-character{background:#06030a;flex-direction:column;overflow:hidden}
+.char-header{position:relative;z-index:10;height:56px;min-height:56px;background:rgba(10,5,0,.95);border-bottom:1px solid var(--gold-dark);display:flex;align-items:center;padding:0 24px;gap:16px}
+.char-breadcrumb{font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em;color:var(--gold);opacity:.7;cursor:pointer;transition:opacity .2s}
+.char-breadcrumb:hover{opacity:1}
+.breadcrumb-sep{color:var(--gold-dark);margin:0 4px}
+.char-breadcrumb-current{color:var(--gold-light);opacity:1;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.15em}
+.char-scroll{position:relative;z-index:2;display:flex;flex:1;overflow:hidden;animation:scrollUnfurl 1s ease forwards}
+@keyframes scrollUnfurl{from{opacity:0;transform:scaleY(.95)}to{opacity:1;transform:scaleY(1)}}
+.char-left-panel{width:280px;min-width:280px;background:linear-gradient(180deg,#d4b483,#c5a070);position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;padding:40px 24px;gap:20px;border-right:3px solid #6b3015}
+.char-portrait-frame{position:relative;z-index:1;width:160px;height:180px;border:3px solid rgba(140,80,20,.5);background:linear-gradient(135deg,rgba(90,50,10,.2),rgba(50,20,5,.3));display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px}
+.char-portrait-frame::before,.char-portrait-frame::after{content:'';position:absolute;width:20px;height:20px;border-color:rgba(140,80,20,.7);border-style:solid}
+.char-portrait-frame::before{top:-6px;left:-6px;border-width:2px 0 0 2px}
+.char-portrait-frame::after{bottom:-6px;right:-6px;border-width:0 2px 2px 0}
+.portrait-emoji{font-size:64px;line-height:1}
+.portrait-label{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.2em;color:rgba(90,50,10,.6);text-transform:uppercase}
+.char-house-badge{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(90,50,10,.12);border:1px solid rgba(140,80,20,.3);padding:10px 20px;width:100%}
+.badge-house-name{font-family:'Cinzel Decorative',serif;font-size:.9rem;color:#2a1000;font-weight:700}
+.badge-sigil{font-size:24px}
+.badge-words{font-family:'IM Fell English',serif;font-style:italic;font-size:.65rem;color:#5a3010;text-align:center}
+.char-vitals{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;gap:6px}
+.vital-row{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(140,80,20,.15);padding-bottom:4px}
+.vital-label{font-family:'Cinzel',serif;font-size:.58rem;letter-spacing:.15em;color:#6a3a10;text-transform:uppercase}
+.vital-value{font-family:'IM Fell English SC',serif;font-size:.72rem;color:#2a1000}
+.char-right-panel{flex:1;overflow-y:auto;padding:40px 48px;background:linear-gradient(180deg,#d4b483,#c5a070,#b8904a);position:relative;scrollbar-width:thin;scrollbar-color:rgba(140,80,20,.4) transparent}
+.char-right-panel::-webkit-scrollbar{width:6px}
+.char-right-panel::-webkit-scrollbar-thumb{background:rgba(140,80,20,.4);border-radius:3px}
+.char-full-name{font-family:'Cinzel Decorative',serif;font-size:clamp(1.4rem,3vw,2.2rem);font-weight:900;color:#1a0800;line-height:1.2;margin-bottom:4px}
+.char-title-text{font-family:'IM Fell English',serif;font-style:italic;font-size:1rem;color:#5a2a05;margin-bottom:20px;opacity:.85}
+.char-section-title{font-family:'Cinzel',serif;font-size:.65rem;letter-spacing:.35em;color:#8a4a10;text-transform:uppercase;margin-bottom:8px;margin-top:20px;display:flex;align-items:center;gap:8px}
+.char-section-title::after{content:'';flex:1;height:1px;background:rgba(140,80,20,.3)}
+.char-body-text{font-family:'IM Fell English',serif;font-size:.9rem;color:#2a1000;line-height:1.8;opacity:.9}
+.char-battles{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.battle-tag{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.1em;background:rgba(90,50,10,.15);border:1px solid rgba(140,80,20,.3);padding:3px 10px;color:#4a2000;text-transform:uppercase}
+.char-status-final{display:inline-block;margin-top:8px;font-family:'Cinzel',serif;font-size:.7rem;letter-spacing:.2em;padding:6px 16px;text-transform:uppercase;border:1px solid}
+.char-status-final.alive{border-color:rgba(20,80,20,.4);color:#1a4a1a;background:rgba(20,80,20,.1)}
+.char-status-final.dead{border-color:rgba(120,20,20,.4);color:#6a0a0a;background:rgba(120,20,20,.1)}
+.char-status-final.unknown{border-color:rgba(100,80,20,.4);color:#5a4a0a;background:rgba(100,80,20,.1)}
+
+/* ===== SEARCH ===== */
+#page-search{background:#08040a;flex-direction:column;overflow:hidden}
+.search-header-bar{height:56px;min-height:56px;background:rgba(10,5,0,.98);border-bottom:1px solid var(--gold-dark);display:flex;align-items:center;padding:0 24px;gap:16px}
+.search-input-wrap{flex:1;max-width:500px;position:relative;display:flex;align-items:center}
+.search-input{width:100%;font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:.1em;background:rgba(201,168,76,.06);border:1px solid var(--gold-dark);color:var(--gold-light);padding:8px 40px 8px 16px;outline:none;transition:all .3s}
+.search-input::placeholder{color:rgba(201,168,76,.3)}
+.search-input:focus{border-color:var(--gold);background:rgba(201,168,76,.1);box-shadow:0 0 20px rgba(201,168,76,.1)}
+.search-icon{position:absolute;right:12px;color:var(--gold);opacity:.5;font-size:1rem;pointer-events:none}
+.search-filters{height:44px;min-height:44px;background:rgba(8,4,2,.95);border-bottom:1px solid rgba(201,168,76,.15);display:flex;align-items:center;padding:0 24px;gap:8px}
+.filter-label{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.2em;color:rgba(201,168,76,.4);text-transform:uppercase;margin-right:8px}
+.filter-btn{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.15em;color:var(--text-parchment);background:transparent;border:1px solid rgba(201,168,76,.2);padding:4px 14px;cursor:pointer;transition:all .3s;text-transform:uppercase}
+.filter-btn:hover,.filter-btn.active{color:var(--gold-light);border-color:var(--gold);background:rgba(201,168,76,.1)}
+.search-results{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;align-content:start;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.2) transparent}
+.result-card{background:linear-gradient(135deg,rgba(201,168,76,.08),rgba(201,168,76,.04));border:1px solid rgba(201,168,76,.2);padding:18px;cursor:pointer;transition:all .35s;position:relative;overflow:hidden}
+.result-card:hover{border-color:var(--gold);transform:translateY(-4px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.result-type{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.25em;color:var(--gold);opacity:.6;text-transform:uppercase;margin-bottom:6px}
+.result-name{font-family:'Cinzel Decorative',serif;font-size:.9rem;color:var(--gold-light);margin-bottom:4px;line-height:1.3}
+.result-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:.75rem;color:var(--text-parchment);opacity:.7}
+.result-sigil{font-size:28px;float:right;margin-left:8px;margin-bottom:4px;line-height:1}
+
+/* ===== PAGE FLIP TRANSITION ===== */
+.page-flip-overlay{position:fixed;inset:0;z-index:1000;background:linear-gradient(90deg,#8a5020,#d4b483,#8a5020);transform:scaleX(0);transform-origin:left;pointer-events:none}
+.page-flip-overlay.flipping{animation:pageFlip .5s cubic-bezier(.4,0,.6,1) forwards}
+@keyframes pageFlip{
+  0%{transform:scaleX(0);transform-origin:left}
+  50%{transform:scaleX(1);transform-origin:left}
+  51%{transform:scaleX(1);transform-origin:right}
+  100%{transform:scaleX(0);transform-origin:right}
+}
