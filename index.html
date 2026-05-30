@@ -180,5 +180,68 @@
 
 <script src="data.js"></script>
 <script src="app.js"></script>
+
+<!-- ===== DISCLAIMER BAR ===== -->
+<div class="disclaimer-bar" id="disclaimerBar">
+  <div class="disclaimer-text">
+    ⚔ Fan project — all lore inspired by <em>A Song of Ice &amp; Fire</em> by
+    <strong>George R.R. Martin</strong> &amp; the HBO series <em>Game of Thrones</em>.
+    Details may differ from the books or show.
+    <a href="#" onclick="openCredits();return false;">View full credits &amp; disclaimer</a>
+  </div>
+  <button class="disclaimer-close" onclick="document.getElementById('disclaimerBar').style.display='none'">Dismiss</button>
+</div>
+
+<!-- ===== CREDITS MODAL ===== -->
+<div class="credits-modal" id="creditsModal" onclick="if(event.target===this)closeCredits()">
+  <div class="credits-box">
+    <div class="credits-title">Credits &amp; Disclaimer</div>
+    <div class="credits-subtitle">The Known World — A Fan Lore Compendium</div>
+
+    <div class="credits-divider"></div>
+
+    <div class="credits-section-title">Based On</div>
+    <div class="credits-body">
+      <em>A Song of Ice &amp; Fire</em> novel series by <strong>George R.R. Martin</strong><br>
+      Published by Bantam Books (US) &amp; HarperCollins (UK)<br>
+      Books: A Game of Thrones (1996) · A Clash of Kings (1998) · A Storm of Swords (2000) · A Feast for Crows (2005) · A Dance with Dragons (2011)<br><br>
+      <em>Fire &amp; Blood</em> (2018) &amp; <em>A Knight of the Seven Kingdoms</em> (2015) by George R.R. Martin<br><br>
+      <em>The World of Ice &amp; Fire</em> (2014) by George R.R. Martin, Elio M. García Jr. &amp; Linda Antonsson
+    </div>
+
+    <div class="credits-divider"></div>
+
+    <div class="credits-section-title">Television</div>
+    <div class="credits-body">
+      <em>Game of Thrones</em> — Created by David Benioff &amp; D.B. Weiss. HBO, 2011–2019.<br>
+      <em>House of the Dragon</em> — Created by Ryan Condal &amp; George R.R. Martin. HBO, 2022–present.
+    </div>
+
+    <div class="credits-divider"></div>
+
+    <div class="credits-section-title">Disclaimer</div>
+    <div class="credits-warning">
+      This is an unofficial fan project created for educational and entertainment purposes only.
+      No copyright infringement is intended. All character summaries, location descriptions,
+      and lore entries are written in original words as inspired by the source material —
+      no text has been reproduced from the books or show.<br><br>
+      Details on this site may differ slightly from the books, the TV series, or official
+      companion materials. House of the Dragon and prequel lore may contradict earlier
+      established canon. Always refer to the original works for accurate information.<br><br>
+      Game of Thrones™, A Song of Ice &amp; Fire™, and all related names, characters,
+      and places are the intellectual property of George R.R. Martin and HBO.
+      This site is not affiliated with, endorsed by, or connected to George R.R. Martin,
+      HBO, or any official rights holders.
+    </div>
+
+    <button class="credits-close-btn" onclick="closeCredits()">Close</button>
+  </div>
+</div>
+
+<script>
+function openCredits(){ document.getElementById('creditsModal').classList.add('open') }
+function closeCredits(){ document.getElementById('creditsModal').classList.remove('open') }
+</script>
+
 </body>
 </html>
