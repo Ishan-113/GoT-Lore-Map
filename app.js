@@ -72,7 +72,7 @@ function renderMap() {
   Object.entries(HOUSES).forEach(([key, h]) => {
     const item = document.createElement('div');
     item.className = 'legend-item';
-    item.innerHTML = '<span style="font-size:12px">' + h.sigil + '</span><span class="legend-text">' + h.name.replace('House ', '') + '</span>';
+    item.innerHTML = h.sigil + '<span class="legend-text">' + h.name.replace('House ', '') + '</span>';
     item.addEventListener('click', () => { currentHouse = key; navigateTo('house'); });
     legend.appendChild(item);
   });
@@ -100,7 +100,7 @@ function renderHousePage(houseKey) {
     requestAnimationFrame(() => { book.style.animation = ''; });
   }
 
-  document.getElementById('houseSigilLarge').textContent = h.sigil;
+  document.getElementById('houseSigilLarge').innerHTML = h.sigil;
   document.getElementById('houseNameBook').textContent = h.name;
   document.getElementById('houseWordsBook').textContent = h.words;
   document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
@@ -144,7 +144,7 @@ function renderCharPage(charKey) {
   document.getElementById('breadHouse').textContent = h ? h.name : 'House';
   document.getElementById('breadChar').textContent = ch.name;
   document.getElementById('charPortraitEmoji').textContent = ch.portrait;
-  document.getElementById('charBadgeSigil').textContent = h ? h.sigil : '⚔';
+  document.getElementById('charBadgeSigil').innerHTML = h ? h.sigil : '⚔';
   document.getElementById('charBadgeHouse').textContent = h ? h.name : '';
   document.getElementById('charBadgeWords').textContent = h ? h.words : '';
 
