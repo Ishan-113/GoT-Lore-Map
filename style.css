@@ -506,3 +506,181 @@ body{font-family:'IM Fell English SC',serif}
   left:16px !important;
   z-index:999 !important;
 }
+
+/* MOBILE MAP + SEARCH FIX */
+@media (max-width: 768px){
+
+  .map-header,
+  .search-header-bar{
+    height:auto !important;
+    min-height:88px !important;
+    padding:8px 12px !important;
+    flex-wrap:wrap !important;
+    gap:8px !important;
+  }
+
+  .map-header-title{
+    font-size:.9rem !important;
+  }
+
+  .nav-tabs{
+    width:100% !important;
+    justify-content:center !important;
+  }
+
+  .map-legend{
+    top:116px !important;
+    left:12px !important;
+    width:205px !important;
+  }
+
+  .map-controls{
+    top:116px !important;
+    right:12px !important;
+  }
+
+  .map-stage{
+    width:150vw !important;
+  }
+
+  .search-input-wrap{
+    order:3 !important;
+    width:100% !important;
+    max-width:none !important;
+    flex:1 0 100% !important;
+  }
+
+  .search-input{
+    display:block !important;
+    width:100% !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    color:var(--gold-light) !important;
+    font-size:.75rem !important;
+  }
+
+  .search-filters{
+    height:auto !important;
+    min-height:auto !important;
+    padding:8px 12px !important;
+    flex-wrap:wrap !important;
+    gap:8px !important;
+  }
+
+  .filter-label{
+    width:100% !important;
+  }
+
+  .filter-btn{
+    flex:1 1 auto !important;
+  }
+
+  .search-results{
+    padding:16px !important;
+    padding-bottom:90px !important;
+    grid-template-columns:1fr !important;
+  }
+
+  .result-card{
+    min-height:120px !important;
+  }
+}
+
+/* MOBILE SEARCH WIDTH FIX */
+@media (max-width:768px){
+
+  #page-search{
+    width:100vw !important;
+    overflow:hidden !important;
+  }
+
+  .search-header-bar,
+  .search-filters,
+  .search-results{
+    width:100vw !important;
+    max-width:100vw !important;
+    box-sizing:border-box !important;
+  }
+
+  .search-header-bar{
+    padding-left:10px !important;
+    padding-right:10px !important;
+  }
+
+  .search-input-wrap{
+    width:calc(100vw - 20px) !important;
+    max-width:calc(100vw - 20px) !important;
+    margin:0 auto !important;
+  }
+
+  .search-filters{
+    padding-left:10px !important;
+    padding-right:10px !important;
+    overflow-x:hidden !important;
+  }
+
+  .filter-label{
+    margin-left:0 !important;
+    padding-left:0 !important;
+  }
+
+  .filter-btn{
+    min-width:0 !important;
+    padding:7px 10px !important;
+    font-size:.58rem !important;
+  }
+
+  .search-results{
+    padding-left:10px !important;
+    padding-right:10px !important;
+    overflow-x:hidden !important;
+  }
+
+  .result-card{
+    width:100% !important;
+    max-width:100% !important;
+  }
+}
+
+/* MOBILE FOOTER OVERLAP FIX */
+@media (max-width:768px){
+  .disclaimer-bar{
+    font-size:.58rem !important;
+    padding:6px 8px !important;
+    gap:6px !important;
+    align-items:flex-start !important;
+  }
+
+  .disclaimer-close{
+    min-width:76px !important;
+    padding:6px 8px !important;
+    font-size:.65rem !important;
+  }
+
+  .search-results{
+    padding-bottom:120px !important;
+  }
+
+  .map-container{
+    padding-bottom:90px !important;
+  }
+}
+
+
+/* MOBILE MAP GAP FIX */
+@media (max-width:768px){
+  .map-container{
+    height:calc(100vh - 185px) !important;
+    padding-top:0 !important;
+  }
+
+  .map-stage{
+    top:58% !important;
+    width:175vw !important;
+  }
+
+  .map-legend,
+  .map-controls{
+    top:150px !important;
+  }
+}
