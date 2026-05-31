@@ -250,3 +250,30 @@ body{font-family:'IM Fell English SC',serif}
   #charBadges{flex-wrap:wrap;gap:6px}
   .char-badge{min-width:46%}
 }
+/* === global credits / disclaimer === */
+.disclaimer-bar{
+  position:fixed; bottom:0; left:0; width:100%;
+  display:flex; justify-content:space-between; gap:12px;
+  padding:8px 16px; background:rgba(10,5,0,.95);
+  font-family:'Cinzel',serif; font-size:.7rem; color:var(--text-parchment);
+  border-top:1px solid var(--gold-dark); z-index:2000;
+}
+.disclaimer-bar a{color:var(--gold-light);text-decoration:underline;}
+.disclaimer-close{background:transparent;border:1px solid var(--gold-dark);
+  color:var(--gold-light);cursor:pointer;padding:4px 12px;font-size:.7rem;}
+
+.credits-modal{
+  position:fixed; inset:0; display:none; align-items:center; justify-content:center;
+  background:rgba(0,0,0,.7); z-index:3000;
+}
+.credits-modal.open{display:flex;}
+.credits-box{
+  max-width:600px; max-height:80vh; overflow:auto;
+  background:var(--parchment); padding:32px;
+  border:2px solid var(--gold-dark); box-shadow:0 0 30px #000;
+}
+.credits-close-btn{margin-top:24px;padding:8px 24px;
+  font-family:'Cinzel',serif;font-size:.8rem;
+  background:var(--gold-dark);color:#fff;border:none;cursor:pointer;}
+
+.inner-disclaimer{display:none;}  /* hide duplicate inline notice */
