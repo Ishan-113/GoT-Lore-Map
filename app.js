@@ -96,8 +96,11 @@ function enableTouchPins(){
   ));
 }
 document.addEventListener('DOMContentLoaded', () => {
-    renderMap();
-    enableTouchPins();
+  renderMap();
+enableTouchPins();
+enableLegendDropdown();
+enableMapDrag();
+centerMapView();
 });
 
 function positionTooltip(e, tooltip, container) {
@@ -257,12 +260,15 @@ function renderSearch(query) {
   });
 }
 
+let mapPanX = 0;
+let mapPanY = 0;
+
 function applyMapZoom(){
   const stage = document.getElementById('mapStage');
   if (!stage) return;
 
-  stage.style.width = `${1600 * mapZoom}px`;
-  stage.style.height = `${1000 * mapZoom}px`;
+  stage.style.transform =
+    `translate(calc(-50% + ${mapPanX}px), calc(-50% + ${mapPanY}px)) scale(${mapZoom})`;
 }
 
 function zoomMap(amount){
@@ -272,12 +278,81 @@ function zoomMap(amount){
 
 function resetMapZoom(){
   mapZoom = 1;
+  mapPanX = 0;
+  mapPanY = 0;
   applyMapZoom();
 }
 
 // ===== INIT =====
 renderMap();
 
+// ===== LEGEND DROPDOWN =====
+function enableLegendDropdown() {
+  const legend = document.querySelector('.map-legend');
+  const title = document.querySelector('.legend-title');
+  const items = document.getElementById('legendItems');
 
+  if (!legend || !title || !items) return;
 
+  title.addEventListener('click', (e) => {
+    e.stopPropagation();
+    legend.classList.toggle('open');
+  });
 
+  items.addEventListener('click', (e) => {
+    e.stopPropagation();
+  });
+
+  document.addEventListener('click', () => {
+    legend.classList.remove('open');
+  });
+}
+
+// ===== DRAG TO PAN MAP =====
+function enableMapDrag() {
+  const stage = document.getElementById('mapStage');
+  if (!stage) return;
+
+  let dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let startPanX = 0;
+  let startPanY = 0;
+
+  stage.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.map-pin')) return;
+
+    dragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    startPanX = mapPanX;
+    startPanY = mapPanY;
+    document.body.style.cursor = 'grabbing';
+  });
+
+  document.addEventListener('mousemove', (e) => {
+    if (!dragging) return;
+
+    mapPanX = startPanX + (e.clientX - startX);
+    mapPanY = startPanY + (e.clientY - startY);
+    applyMapZoom();
+  });
+
+  document.addEventListener('mouseup', () => {
+    dragging = false;
+    document.body.style.cursor = '';
+  });
+}
+
+function centerMapView() {
+  const map = document.getElementById('mapContainer');
+  if (!map) return;
+
+  requestAnimationFrame(() => {
+    const maxLeft = map.scrollWidth - map.clientWidth;
+    const maxTop = map.scrollHeight - map.clientHeight;
+
+    map.scrollLeft = maxLeft > 0 ? maxLeft / 2 : 0;
+    map.scrollTop = maxTop > 0 ? maxTop / 2 : 0;
+  });
+}

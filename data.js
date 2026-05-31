@@ -238,22 +238,20 @@ const CHARACTERS = {
 
 const LOCATIONS = [
   {id:"winterfell",name:"Winterfell",house:"stark",x:19,y:14,desc:"Seat of House Stark, ancient castle of the Kings of Winter, warmed by hot springs beneath its walls."},
-  {id:"kingslanding",name:"King's Landing",house:"baratheon",x:26,y:53,desc:"Capital of the Seven Kingdoms, home of the Iron Throne and the Red Keep."},
-  {id:"casterly_rock",name:"Casterly Rock",house:"lannister",x:18,y:44,desc:"Seat of House Lannister, built into a great rock above goldmines of legendary wealth."},
-  {id:"dragonstone",name:"Dragonstone",house:"targaryen",x:30,y:50,desc:"Island fortress of House Targaryen. Ancient seat of the heir to the Iron Throne. Dragons were born here."},
-  {id:"the_eyrie",name:"The Eyrie",house:"arryn",x:27,y:33,desc:"Sky fortress of House Arryn, perched atop the Mountains of the Moon. Impregnable by force."},
-  {id:"highgarden",name:"Highgarden",house:"tyrell",x:18,y:62,desc:"Seat of House Tyrell in the heart of the Reach, the most fertile lands of Westeros."},
-  {id:"storms_end",name:"Storm's End",house:"baratheon",x:28,y:62,desc:"Mighty castle of House Baratheon on Shipbreaker Bay, built to face endless storms."},
-  {id:"riverrun",name:"Riverrun",house:"tully",x:20,y:39,desc:"Island fortress of House Tully at the fork of the Red Fork and the Tumblestone rivers."},
+  {id:"the_twins",name:"The Twins",house:null,x:21,y:29,desc:"Twin castles of House Frey controlling the crossing of the Green Fork."},
   {id:"pyke",name:"Pyke",house:"greyjoy",x:10,y:34,desc:"Wave-battered seat of House Greyjoy on the Iron Islands, built on sea stacks above a grey sea."},
-  {id:"sunspear",name:"Sunspear",house:"martell",x:27,y:76,desc:"Sandstone seat of House Martell in the deserts of Dorne, ancient and unbowed."},
-  {id:"pentos",name:"Pentos",house:null,x:48,y:42,desc:"Free city of Essos where Daenerys Targaryen began her journey to reclaim her birthright."},
-  {id:"dothraki",name:"Dothraki Sea",house:null,x:68,y:40,desc:"The great grasslands of Essos, home to the horse lords and their vast khalasars."},
-  {id:"the_twins",name:"The Twins",house:null,x:21,y:28,desc:"Twin castles of House Frey straddling the Green Fork. Site of the infamous Red Wedding."},
-  {id:"harrenhal",name:"Harrenhal",house:null,x:24,y:40,desc:"The largest castle ever built, now a cursed ruin since Aegon's dragons melted its towers."}
+  {id:"the_eyrie",name:"The Eyrie",house:"arryn",x:27,y:34,desc:"Sky fortress of House Arryn, perched atop the Mountains of the Moon. Impregnable by force."},
+  {id:"riverrun",name:"Riverrun",house:"tully",x:21,y:40,desc:"Island fortress of House Tully at the fork of the Red Fork and the Tumblestone rivers."},
+  {id:"harrenhal",name:"Harrenhal",house:null,x:24,y:39,desc:"Gigantic cursed ruin on the shore of the Gods Eye, melted by dragonfire during Aegon's Conquest."},
+  {id:"casterly_rock",name:"Casterly Rock",house:"lannister",x:18,y:45,desc:"Seat of House Lannister, built into a great rock above goldmines of legendary wealth."},
+  {id:"dragonstone",name:"Dragonstone",house:"targaryen",x:30,y:49,desc:"Island fortress of House Targaryen. Ancient seat of the heir to the Iron Throne. Dragons were born here."},
+  {id:"kingslanding",name:"King's Landing",house:"baratheon",x:27,y:54,desc:"Capital of the Seven Kingdoms, home of the Iron Throne and the Red Keep."},
+  {id:"highgarden",name:"Highgarden",house:"tyrell",x:18,y:59,desc:"Seat of House Tyrell in the heart of the Reach, the most fertile lands of Westeros."},
+  {id:"storms_end",name:"Storm's End",house:"baratheon",x:28,y:62,desc:"Mighty castle of House Baratheon on Shipbreaker Bay, built to face endless storms."},
+  {id:"sunspear",name:"Sunspear",house:"martell",x:27,y:71,desc:"Sandstone seat of House Martell in the deserts of Dorne, ancient and unbowed."},
+  {id:"pentos",name:"Pentos",house:null,x:48,y:39,desc:"Free city of Essos where Daenerys Targaryen began her journey to reclaim her birthright."},
+  {id:"dothraki_sea",name:"Dothraki Sea",house:null,x:68,y:37,desc:"Vast grassland of Essos, crossed by khalasars and feared by the Free Cities."}
 ];
-
-
 
 
 (function attachSigils() {

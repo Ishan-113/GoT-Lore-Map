@@ -81,10 +81,16 @@ body{font-family:'IM Fell English SC',serif}
   overflow:auto;
   background:#050208;
   cursor:grab;
+  scroll-behavior:auto;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:24px;
+}
+
+.map-container.dragging{
+  cursor:grabbing;
+  user-select:none;
 }
 
 .map-stage{
@@ -211,9 +217,11 @@ body{font-family:'IM Fell English SC',serif}
   border:1px solid var(--gold-dark);
   padding:12px 16px;
 }
-.legend-title{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--gold);margin-bottom:0;text-transform:uppercase;cursor:pointer}
+.legend-title{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.3em;color:var(--gold);margin-bottom:0;text-transform:uppercase;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.legend-title::after{content:'▾';font-size:.75rem;transition:transform .2s ease}
+.map-legend.open .legend-title::after{transform:rotate(180deg)}
 #legendItems{display:none;margin-top:10px}
-.map-legend:hover #legendItems{display:block}
+.map-legend.open #legendItems{display:block}
 .legend-item{display:flex;align-items:center;gap:8px;margin-bottom:4px;cursor:pointer}
 .legend-text{font-family:'IM Fell English SC',serif;font-size:.65rem;color:var(--text-parchment)}
 
@@ -395,7 +403,14 @@ body{font-family:'IM Fell English SC',serif}
   .map-container{align-items:flex-start;justify-content:flex-start;padding:10px}
   .map-stage{width:964px}
   .map-controls{top:10px;right:10px}
-  .map-legend{display:none}
+  .map-legend{
+    display:block;
+    top:10px;
+    left:10px;
+    min-width:155px;
+    max-width:calc(100vw - 20px);
+  }
+  #legendItems{max-height:45vh;overflow:auto}
   .pin-label{font-size:.48rem}
   .pin-sigil,.pin-sigil svg,.pin-sigil img{width:18px;height:18px}
   .map-tooltip{max-width:220px;width:220px;font-size:.75rem}
@@ -408,4 +423,86 @@ body{font-family:'IM Fell English SC',serif}
 
   .char-card{flex-direction:column;text-align:center}
   .search-results{grid-template-columns:1fr}
+}
+
+.map-controls,
+.map-legend{
+  position:fixed !important;
+  z-index:999 !important;
+}
+
+.map-controls{
+  top:104px !important;
+  right:170px !important;
+}
+
+.map-legend{
+  top:104px !important;
+  left:16px !important;
+}
+
+/* FINAL MAP UI POSITION FIX */
+.map-container{
+  align-items:flex-start !important;
+  justify-content:flex-start !important;
+  padding:8px !important;
+}
+
+.map-legend{
+  top:76px !important;
+  left:16px !important;
+}
+
+.map-controls{
+  top:76px !important;
+  right:16px !important;
+}
+
+/* CENTER MAP WHEN ZOOMED OUT */
+.map-container{
+  display:grid !important;
+  place-items:center !important;
+  overflow:auto !important;
+}
+
+.map-stage{
+  margin:auto !important;
+}
+
+/* FINAL MAP CENTER + PAN SYSTEM */
+.map-container{
+  position:relative !important;
+  overflow:hidden !important;
+  padding:0 !important;
+  display:block !important;
+}
+
+.map-stage{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(92vw,1500px) !important;
+  max-width:none !important;
+  transform-origin:center center !important;
+  margin:0 !important;
+}
+
+.map-img{
+  width:100% !important;
+  height:auto !important;
+  display:block !important;
+}
+
+.map-controls{
+  position:fixed !important;
+  top:76px !important;
+  right:16px !important;
+  z-index:999 !important;
+}
+
+.map-legend{
+  position:fixed !important;
+  top:76px !important;
+  left:16px !important;
+  z-index:999 !important;
 }
