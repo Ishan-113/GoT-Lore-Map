@@ -1,14 +1,23 @@
 let currentHouse = null;
 let currentChar = null;
 let searchFilter = 'all';
-
 let mapZoom = 1;
+let mapPanX = 0;
+let mapPanY = 0;
 
 // ===== NAVIGATION =====
 function navigateTo(pageId) {
-  if(pageId === 'timeline'){ renderTimeline(); }
+  if (pageId === 'timeline') { renderTimeline(); }
+  if (pageId === 'search') {
+    searchFilter = 'all';
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    const allBtn = document.querySelector('.filter-btn');
+    if (allBtn) allBtn.classList.add('active');
+  }
+
   const overlay = document.getElementById('flipOverlay');
   overlay.classList.add('flipping');
+
   setTimeout(() => {
     document.querySelectorAll('.page').forEach(p => {
       p.classList.remove('active');
@@ -31,7 +40,8 @@ function navigateTo(pageId) {
       const si = document.getElementById('searchInput');
       if (si) si.value = '';
     }
-    overlay.classList.remove('flipping');
+
+    setTimeout(() => overlay.classList.remove('flipping'), 100);
   }, 280);
 }
 
@@ -70,6 +80,7 @@ function renderMap() {
     }
     container.appendChild(pin);
   });
+
   enableTouchPins();
 
   const legend = document.getElementById('legendItems');
@@ -83,26 +94,23 @@ function renderMap() {
     legend.appendChild(item);
   });
 }
-/* ─ Touch support for phones ─ */
-function enableTouchPins(){
-  document.querySelectorAll('.map-pin').forEach(pin=>{
-    pin.addEventListener('touchstart',e=>{
+
+// ===== TOUCH PINS =====
+function enableTouchPins() {
+  document.querySelectorAll('.map-pin').forEach(pin => {
+    pin.addEventListener('touchstart', e => {
       e.stopPropagation();
+      e.preventDefault();
+      document.querySelectorAll('.map-pin.touch-show').forEach(p => {
+        if (p !== pin) p.classList.remove('touch-show');
+      });
       pin.classList.toggle('touch-show');
-    });
+    }, { passive: false });
   });
-  // Hide tooltip when you tap anywhere else
-  document.addEventListener('touchstart',()=>(
-    document.querySelectorAll('.map-pin.touch-show')
-            .forEach(p=>p.classList.remove('touch-show'))
-  ));
+  document.addEventListener('touchstart', () => {
+    document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
+  });
 }
-document.addEventListener('DOMContentLoaded', () => {
-  renderMap();
-enableLegendDropdown();
-enableMapDrag();
-centerMapView();
-});
 
 function positionTooltip(e, tooltip, container) {
   const rect = container.getBoundingClientRect();
@@ -119,7 +127,6 @@ function renderHousePage(houseKey) {
   const h = HOUSES[houseKey];
   if (!h) return;
 
-  // Re-trigger book open animation
   const book = document.getElementById('bookEl');
   if (book) {
     book.style.animation = 'none';
@@ -132,7 +139,6 @@ function renderHousePage(houseKey) {
   document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
   document.getElementById('bookSpineText').textContent = h.name;
 
-  // Ruling lines on left page
   const lines = document.getElementById('pageLines');
   lines.innerHTML = '';
   for (let i = 0; i < 18; i++) {
@@ -142,7 +148,6 @@ function renderHousePage(houseKey) {
     lines.appendChild(l);
   }
 
-  // Character list on right page
   const charList = document.getElementById('charList');
   charList.innerHTML = '';
   (h.characters || []).forEach(ck => {
@@ -167,7 +172,11 @@ function renderCharPage(charKey) {
   if (!ch) return;
   const h = HOUSES[ch.house];
 
-  document.getElementById('breadHouse').textContent = h ? h.name : 'House';
+  const breadHouseEl = document.getElementById('breadHouse');
+  if (breadHouseEl) {
+    breadHouseEl.textContent = h ? h.name : (ch.house || 'Unknown');
+    breadHouseEl.style.display = h ? '' : 'none';
+  }
   document.getElementById('breadChar').textContent = ch.name;
   document.getElementById('charPortraitEmoji').innerHTML = ch.portrait;
   document.getElementById('charBadgeSigil').innerHTML = h ? h.sigil : '⚔';
@@ -219,7 +228,7 @@ function renderSearch(query) {
   }
   if (searchFilter === 'all' || searchFilter === 'character') {
     Object.entries(CHARACTERS).forEach(([key, ch]) => {
-      if (!q || ch.name.toLowerCase().includes(q) || ch.title.toLowerCase().includes(q) || ch.house.toLowerCase().includes(q))
+      if (!q || ch.name.toLowerCase().includes(q) || ch.title.toLowerCase().includes(q) || (ch.house && ch.house.toLowerCase().includes(q)))
         items.push({ type: 'character', key, display: ch.name, sub: ch.title, sigil: ch.portrait, isSvg: true });
     });
   }
@@ -261,23 +270,20 @@ function renderSearch(query) {
   });
 }
 
-let mapPanX = 0;
-let mapPanY = 0;
-
-function applyMapZoom(){
+// ===== MAP ZOOM/PAN =====
+function applyMapZoom() {
   const stage = document.getElementById('mapStage');
   if (!stage) return;
-
   stage.style.transform =
     `translate(calc(-50% + ${mapPanX}px), calc(-50% + ${mapPanY}px)) scale(${mapZoom})`;
 }
 
-function zoomMap(amount){
+function zoomMap(amount) {
   mapZoom = Math.min(2.5, Math.max(0.6, mapZoom + amount));
   applyMapZoom();
 }
 
-function resetMapZoom(){
+function resetMapZoom() {
   mapZoom = 1;
   mapPanX = 0;
   mapPanY = 0;
@@ -285,101 +291,94 @@ function resetMapZoom(){
 }
 
 // ===== RENDER TIMELINE =====
-function renderTimeline(){
+function renderTimeline() {
   const list = document.getElementById('timelineList');
-  if(!list) return;
-
-  // clear
+  if (!list) return;
   list.innerHTML = '';
 
-  TIMELINE_EVENTS
-     .sort((a,b)=>a.year-b.year)
-  .forEach((ev,i)=>{
+  if (typeof TIMELINE_EVENTS === 'undefined' || !TIMELINE_EVENTS.length) {
+    list.innerHTML = '<div style="text-align:center;color:rgba(201,168,76,.5);padding:60px;font-family:\'IM Fell English\',serif;font-style:italic">No timeline events found.</div>';
+    return;
+  }
+
+  [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year).forEach((ev, i, arr) => {
     const item = document.createElement('div');
     item.className = 'timeline-item';
-
     item.innerHTML = `
       <div class="timeline-dot"></div>
-      ${i < TIMELINE_EVENTS.length-1 ? '<div class="timeline-line"></div>' : ''}
-      <div class="timeline-year">${ev.year < 0 ? ev.year+' BC' : ev.year+' AC'}</div>
+      ${i < arr.length - 1 ? '<div class="timeline-line"></div>' : ''}
+      <div class="timeline-year">${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + ' AC'}</div>
       <div class="timeline-title">${ev.title}</div>
       <div class="timeline-desc">${ev.desc}</div>
     `;
-
     list.appendChild(item);
-    });
+  });
 }
-
-// ===== INIT =====
-renderMap();
 
 // ===== LEGEND DROPDOWN =====
 function enableLegendDropdown() {
   const legend = document.querySelector('.map-legend');
   const title = document.querySelector('.legend-title');
   const items = document.getElementById('legendItems');
-
   if (!legend || !title || !items) return;
 
-  title.addEventListener('click', (e) => {
+  title.addEventListener('click', e => {
     e.stopPropagation();
     legend.classList.toggle('open');
   });
-
-  items.addEventListener('click', (e) => {
-    e.stopPropagation();
-  });
-
-  document.addEventListener('click', () => {
-    legend.classList.remove('open');
-  });
+  items.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => legend.classList.remove('open'));
 }
 
-// ===== DRAG TO PAN MAP =====
+// ===== DRAG TO PAN MAP (mouse + touch) =====
 function enableMapDrag() {
   const stage = document.getElementById('mapStage');
   if (!stage) return;
 
   let dragging = false;
-  let startX = 0;
-  let startY = 0;
-  let startPanX = 0;
-  let startPanY = 0;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
 
-  stage.addEventListener('mousedown', (e) => {
-    if (e.target.closest('.map-pin')) return;
-
+  function startDrag(x, y) {
     dragging = true;
-    startX = e.clientX;
-    startY = e.clientY;
-    startPanX = mapPanX;
-    startPanY = mapPanY;
+    startX = x; startY = y;
+    startPanX = mapPanX; startPanY = mapPanY;
     document.body.style.cursor = 'grabbing';
-  });
-
-  document.addEventListener('mousemove', (e) => {
+  }
+  function moveDrag(x, y) {
     if (!dragging) return;
-
-    mapPanX = startPanX + (e.clientX - startX);
-    mapPanY = startPanY + (e.clientY - startY);
+    mapPanX = startPanX + (x - startX);
+    mapPanY = startPanY + (y - startY);
     applyMapZoom();
-  });
-
-  document.addEventListener('mouseup', () => {
+  }
+  function endDrag() {
     dragging = false;
     document.body.style.cursor = '';
+  }
+
+  // Mouse
+  stage.addEventListener('mousedown', e => {
+    if (e.target.closest('.map-pin')) return;
+    startDrag(e.clientX, e.clientY);
   });
+  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+
+  // Touch drag
+  stage.addEventListener('touchstart', e => {
+    if (e.target.closest('.map-pin')) return;
+    if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+  }, { passive: true });
+  stage.addEventListener('touchmove', e => {
+    if (e.touches.length === 1) {
+      moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  }, { passive: true });
+  stage.addEventListener('touchend', endDrag);
 }
 
-function centerMapView() {
-  const map = document.getElementById('mapContainer');
-  if (!map) return;
-
-  requestAnimationFrame(() => {
-    const maxLeft = map.scrollWidth - map.clientWidth;
-    const maxTop = map.scrollHeight - map.clientHeight;
-
-    map.scrollLeft = maxLeft > 0 ? maxLeft / 2 : 0;
-    map.scrollTop = maxTop > 0 ? maxTop / 2 : 0;
-  });
-}
+// ===== INIT — run once after DOM ready =====
+document.addEventListener('DOMContentLoaded', () => {
+  renderMap();
+  enableLegendDropdown();
+  enableMapDrag();
+});
