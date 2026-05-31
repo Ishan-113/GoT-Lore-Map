@@ -1,3 +1,4 @@
+
 const HOUSES = {
   // data.js  — inside the HOUSES declaration
 stark:{
@@ -8,15 +9,7 @@ stark:{
     '<img src="assets/sigils/House_Stark.jpg" '+
     'alt="Direwolf sigil" class="sigil-img">',
 
-  /* 2️⃣  Optional: if you later convert it to SVG, use this instead:
-  sigil:
-    '<svg class="sigil-icon" viewBox="0 0 60 60">'+
-      '<use href="assets/sigils/House_Stark.svg#starkSigil"></use>'+
-    '</svg>',
-     ———  and be sure the SVG file’s root tag is:
-     <svg id="starkSigil" …>
-  */
-
+ 
   words : '"Winter is Coming"',
   region: "The North",
   seat  : "Winterfell",
@@ -259,3 +252,27 @@ const LOCATIONS = [
   {id:"the_twins",name:"The Twins",house:null,x:21,y:28,desc:"Twin castles of House Frey straddling the Green Fork. Site of the infamous Red Wedding."},
   {id:"harrenhal",name:"Harrenhal",house:null,x:24,y:40,desc:"The largest castle ever built, now a cursed ruin since Aegon's dragons melted its towers."}
 ];
+
+
+
+
+(function attachSigils() {
+  const files = {
+    lannister : "House_Lannister.svg",
+    baratheon : "House_Baratheon.svg",
+    targaryen : "House_Targaryen.svg",
+    greyjoy   : "House_Greyjoy.svg",
+    tully     : "House_Tully.svg",
+    arryn     : "House_Arryn.svg",
+    tyrell    : "House_Tyrell.svg",
+    martell   : "House_Martell.svg"
+  };
+
+  for (const [key, house] of Object.entries(HOUSES)) {
+    const file = files[key];
+    if (!file) continue;   // stark is already set, skip it
+    house.sigil =
+      '<img src="assets/sigils/' + file + '" ' +
+      'alt="' + house.name + ' sigil" class="sigil-img">';
+  }
+})();

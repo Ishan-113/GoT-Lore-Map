@@ -285,3 +285,28 @@ body{font-family:'IM Fell English SC',serif}
 }
 
 .inner-disclaimer{display:none;}  /* hide duplicate inline notice */
+
+
+
+
+
+
+
+
+.sigil-img{
+  width:40px;
+  height:40px;
+  object-fit:contain;
+  display:inline-block;
+  vertical-align:middle;
+}
+
+#houseSigilLarge .sigil-img{
+  width:140px;
+  height:140px;
+}
+
+.pin-sigil .sigil-img{
+  width:28px;
+  height:28px;
+}
