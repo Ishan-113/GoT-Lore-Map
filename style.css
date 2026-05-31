@@ -596,3 +596,84 @@ body{font-family:'IM Fell English SC',serif}
     display:none;
   }
 }
+/* FIX HOUSE BOOK MOBILE LAYOUT */
+@media (max-width:768px){
+  html, body{
+    overflow:hidden !important;
+  }
+
+  #page-house{
+    height:100vh !important;
+    overflow:hidden !important;
+  }
+
+  .book-wrapper{
+    width:95vw !important;
+    height:70vh !important;
+  }
+
+  .book{
+    width:100% !important;
+    height:100% !important;
+  }
+
+  .book-page{
+    padding:18px !important;
+  }
+
+  .house-nav{
+    margin-top:10px !important;
+  }
+}
+
+
+
+/* LEGEND DROPDOWN - NOT AFFECTED BY MAP ZOOM */
+.map-legend{
+  position:absolute !important;
+  top:16px !important;
+  left:16px !important;
+  bottom:auto !important;
+  z-index:80 !important;
+  min-width:190px;
+  max-height:none;
+  overflow:visible;
+}
+
+.legend-title{
+  cursor:pointer;
+  margin-bottom:0;
+}
+
+#legendItems{
+  display:none;
+  margin-top:10px;
+}
+
+.map-legend:hover #legendItems{
+  display:block;
+}
+
+
+
+/* FIX HUGE SIGILS IN SEARCH RESULTS */
+.result-sigil{
+  width:42px !important;
+  height:42px !important;
+  flex-shrink:0 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+}
+
+.result-sigil img,
+.result-sigil svg,
+.result-sigil .sigil-img{
+  width:42px !important;
+  height:42px !important;
+  max-width:42px !important;
+  max-height:42px !important;
+  object-fit:contain !important;
+  display:block !important;
+}
