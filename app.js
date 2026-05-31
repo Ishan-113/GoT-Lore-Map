@@ -77,6 +77,21 @@ function renderMap() {
     legend.appendChild(item);
   });
 }
+/* ─ Touch support for phones ─ */
+function enableTouchPins(){
+  document.querySelectorAll('.map-pin').forEach(pin=>{
+    pin.addEventListener('touchstart',e=>{
+      e.stopPropagation();
+      pin.classList.toggle('touch-show');
+    });
+  });
+  // Hide tooltip when you tap anywhere else
+  document.addEventListener('touchstart',()=>(
+    document.querySelectorAll('.map-pin.touch-show')
+            .forEach(p=>p.classList.remove('touch-show'))
+  ));
+}
+document.addEventListener('DOMContentLoaded', enableTouchPins);
 
 function positionTooltip(e, tooltip, container) {
   const rect = container.getBoundingClientRect();

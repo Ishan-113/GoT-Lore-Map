@@ -189,3 +189,64 @@ body{font-family:'IM Fell English SC',serif}
 .char-avatar svg{width:32px;height:32px;display:block}
 .char-avatar{background:none !important;border:none !important;padding:0}
 .result-sigil svg{width:36px;height:36px;display:block}
+/* ───────────────────────────────────────────────
+   MOBILE & SMALL-TABLET IMPROVEMENTS
+   (append after the existing CSS)                */
+/* Allow vertical scrolling on small screens */
+@media (max-width: 768px){
+  html,body{overflow:auto}
+
+  /* Generic page container */
+  .page{
+    position:relative;            /* was fixed */
+    min-height:100%;
+    overflow:auto;
+    display:block !important;     /* override flex if needed */
+  }
+
+  /* Home screen */
+  .home-title{font-size:clamp(1.3rem,6vw,2rem)}
+  .sigil-ring{width:120px;height:120px}
+  .enter-btn{padding:12px 38px;font-size:.9rem}
+
+  /* Map header compresses & wraps */
+  .map-header{
+    flex-wrap:wrap;
+    gap:8px;
+    padding:6px 12px;
+    min-height:auto;
+  }
+  .map-header-title{font-size:.95rem;flex:1 0 100%}
+
+  /* Nav tabs become swipeable chips */
+  .nav-tabs{overflow-x:auto;white-space:nowrap}
+  .nav-tab{
+    font-size:.65rem;
+    padding:4px 12px;
+    flex:0 0 auto;
+  }
+
+  /* Map container – keep aspect */
+  .map-container{height:calc(100vh - 120px)}
+  .map-img{object-fit:contain}
+
+  /* Pin label & tooltip font-sizes */
+  .pin-label{font-size:.55rem}
+  #mapTooltip{font-size:.7rem;max-width:240px}
+
+  /* Legend rows two-columns */
+  #legendItems{
+    flex-wrap:wrap;
+    gap:6px 12px;
+    justify-content:center;
+  }
+  .legend-item .legend-text{font-size:.7rem}
+
+  /* House “book” layout → stacked */
+  #bookLayout{flex-direction:column}
+  #bookLeft,#bookRight{width:100%;max-width:100%}
+
+  /* Character profile badges wrap */
+  #charBadges{flex-wrap:wrap;gap:6px}
+  .char-badge{min-width:46%}
+}
