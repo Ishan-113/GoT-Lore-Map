@@ -42,7 +42,7 @@ function renderMap() {
   container.innerHTML = '';
   const tooltip = document.getElementById('mapTooltip');
   const mapEl = document.getElementById('mapContainer');
-  if (!tooltip || !mapEl) return;/*changes by gpt*/
+  if (!tooltip || !mapEl) return;
 
   LOCATIONS.forEach(loc => {
     const h = loc.house ? HOUSES[loc.house] : null;
@@ -257,12 +257,6 @@ function renderSearch(query) {
   });
 }
 
-// ===== INIT =====
-renderMap();
-
-
-
-
 function applyMapZoom(){
   const stage = document.getElementById('mapStage');
   if (!stage) return;
@@ -280,3 +274,10 @@ function resetMapZoom(){
   mapZoom = 1;
   applyMapZoom();
 }
+
+// ===== INIT =====
+renderMap();
+
+
+
+
