@@ -390,39 +390,42 @@ body{font-family:'IM Fell English SC',serif}
 
 .inner-disclaimer{display:none}
 
-/* ===== RESPONSIVE CLEANUP ===== */
-@media (max-width:768px){
-  html,body{width:100%;height:100%;overflow:hidden}
-  .page{position:fixed;inset:0;min-height:100vh;overflow:hidden;display:none}
-  .page.active{display:flex}
+/* ===== FINAL MAP / PAN LAYER ===== */
+/* Keeps map transform-based zoom/drag stable and keeps controls floating */
+.map-container{
+  position:relative !important;
+  flex:1;
+  width:100%;
+  overflow:hidden !important;
+  background:#050208;
+  cursor:grab;
+  display:block !important;
+  padding:0 !important;
+}
 
-  .map-header{height:auto;min-height:70px;flex-wrap:wrap;padding:8px 10px;gap:8px}
-  .map-header-title{font-size:.85rem;width:100%}
-  .nav-tabs{width:100%;overflow-x:auto;white-space:nowrap;justify-content:center;flex-wrap:wrap}
-  .nav-tab{font-size:.6rem;padding:5px 10px;flex:0 0 auto}
-  .map-container{align-items:flex-start;justify-content:flex-start;padding:10px}
-  .map-stage{width:964px}
-  .map-controls{top:10px;right:10px}
-  .map-legend{
-    display:block;
-    top:10px;
-    left:10px;
-    min-width:155px;
-    max-width:calc(100vw - 20px);
-  }
-  #legendItems{max-height:45vh;overflow:auto}
-  .pin-label{font-size:.48rem}
-  .pin-sigil,.pin-sigil svg,.pin-sigil img{width:18px;height:18px}
-  .map-tooltip{max-width:220px;width:220px;font-size:.75rem}
+.map-container.dragging{
+  cursor:grabbing;
+  user-select:none;
+}
 
-  #page-house{height:100vh;overflow:hidden}
-  .book-wrapper{width:95vw;height:70vh}
-  .book{width:100%;height:100%}
-  .book-page{padding:18px}
-  .house-nav{margin-top:10px}
+.map-stage{
+  position:absolute !important;
+  left:50% !important;
+  top:50% !important;
+  width:min(92vw,1500px) !important;
+  max-width:none !important;
+  margin:0 !important;
+  transform-origin:center center !important;
+}
 
-  .char-card{flex-direction:column;text-align:center}
-  .search-results{grid-template-columns:1fr}
+.map-img{
+  width:100% !important;
+  height:auto !important;
+  display:block !important;
+  object-fit:contain;
+  filter:sepia(.3) contrast(1.1) brightness(.9);
+  user-select:none;
+  pointer-events:none;
 }
 
 .map-controls,
@@ -432,84 +435,35 @@ body{font-family:'IM Fell English SC',serif}
 }
 
 .map-controls{
-  top:104px !important;
-  right:170px !important;
-}
-
-.map-legend{
-  top:104px !important;
-  left:16px !important;
-}
-
-/* FINAL MAP UI POSITION FIX */
-.map-container{
-  align-items:flex-start !important;
-  justify-content:flex-start !important;
-  padding:8px !important;
-}
-
-.map-legend{
-  top:76px !important;
-  left:16px !important;
-}
-
-.map-controls{
   top:76px !important;
   right:16px !important;
 }
 
-/* CENTER MAP WHEN ZOOMED OUT */
-.map-container{
-  display:grid !important;
-  place-items:center !important;
-  overflow:auto !important;
-}
-
-.map-stage{
-  margin:auto !important;
-}
-
-/* FINAL MAP CENTER + PAN SYSTEM */
-.map-container{
-  position:relative !important;
-  overflow:hidden !important;
-  padding:0 !important;
-  display:block !important;
-}
-
-.map-stage{
-  position:absolute !important;
-  left:50% !important;
-  top:50% !important;
-  width:min(92vw,1500px) !important;
-  max-width:none !important;
-  transform-origin:center center !important;
-  margin:0 !important;
-}
-
-.map-img{
-  width:100% !important;
-  height:auto !important;
-  display:block !important;
-}
-
-.map-controls{
-  position:fixed !important;
-  top:76px !important;
-  right:16px !important;
-  z-index:999 !important;
-}
-
 .map-legend{
-  position:fixed !important;
   top:76px !important;
   left:16px !important;
-  z-index:999 !important;
 }
 
-/* MOBILE MAP + SEARCH FIX */
-@media (max-width: 768px){
+/* ===== MOBILE RESPONSIVE ===== */
+@media (max-width:768px){
+  html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+  }
 
+  .page{
+    position:fixed;
+    inset:0;
+    min-height:100vh;
+    overflow:hidden;
+  }
+
+  .page.active{
+    display:flex;
+  }
+
+  /* Shared mobile headers */
   .map-header,
   .search-header-bar{
     height:auto !important;
@@ -526,28 +480,81 @@ body{font-family:'IM Fell English SC',serif}
   .nav-tabs{
     width:100% !important;
     justify-content:center !important;
+    flex-wrap:wrap;
+    gap:6px;
   }
 
-  .map-legend{
-    top:116px !important;
-    left:12px !important;
-    width:205px !important;
+  .nav-tab{
+    font-size:.6rem;
+    padding:5px 10px;
   }
 
-  .map-controls{
-    top:116px !important;
-    right:12px !important;
+  /* Mobile map */
+  .map-container{
+    height:calc(100vh - 185px) !important;
+    padding-top:0 !important;
+    padding-bottom:90px !important;
   }
 
   .map-stage{
-    width:150vw !important;
+    top:58% !important;
+    width:175vw !important;
+  }
+
+  .map-legend{
+    top:150px !important;
+    left:12px !important;
+    width:205px !important;
+    max-width:calc(100vw - 24px) !important;
+  }
+
+  .map-controls{
+    top:150px !important;
+    right:12px !important;
+  }
+
+  #legendItems{
+    max-height:45vh;
+    overflow:auto;
+  }
+
+  .pin-label{
+    font-size:.48rem;
+  }
+
+  .pin-sigil,
+  .pin-sigil svg,
+  .pin-sigil img{
+    width:18px;
+    height:18px;
+  }
+
+  .map-tooltip{
+    width:220px;
+    max-width:220px;
+    font-size:.75rem;
+  }
+
+  /* Mobile search */
+  #page-search{
+    width:100vw !important;
+    overflow:hidden !important;
+  }
+
+  .search-header-bar,
+  .search-filters,
+  .search-results{
+    width:100vw !important;
+    max-width:100vw !important;
+    box-sizing:border-box !important;
   }
 
   .search-input-wrap{
     order:3 !important;
-    width:100% !important;
-    max-width:none !important;
+    width:calc(100vw - 20px) !important;
+    max-width:calc(100vw - 20px) !important;
     flex:1 0 100% !important;
+    margin:0 auto !important;
   }
 
   .search-input{
@@ -562,88 +569,67 @@ body{font-family:'IM Fell English SC',serif}
   .search-filters{
     height:auto !important;
     min-height:auto !important;
-    padding:8px 12px !important;
+    padding:8px 10px !important;
     flex-wrap:wrap !important;
     gap:8px !important;
-  }
-
-  .filter-label{
-    width:100% !important;
-  }
-
-  .filter-btn{
-    flex:1 1 auto !important;
-  }
-
-  .search-results{
-    padding:16px !important;
-    padding-bottom:90px !important;
-    grid-template-columns:1fr !important;
-  }
-
-  .result-card{
-    min-height:120px !important;
-  }
-}
-
-/* MOBILE SEARCH WIDTH FIX */
-@media (max-width:768px){
-
-  #page-search{
-    width:100vw !important;
-    overflow:hidden !important;
-  }
-
-  .search-header-bar,
-  .search-filters,
-  .search-results{
-    width:100vw !important;
-    max-width:100vw !important;
-    box-sizing:border-box !important;
-  }
-
-  .search-header-bar{
-    padding-left:10px !important;
-    padding-right:10px !important;
-  }
-
-  .search-input-wrap{
-    width:calc(100vw - 20px) !important;
-    max-width:calc(100vw - 20px) !important;
-    margin:0 auto !important;
-  }
-
-  .search-filters{
-    padding-left:10px !important;
-    padding-right:10px !important;
     overflow-x:hidden !important;
   }
 
   .filter-label{
+    width:100% !important;
     margin-left:0 !important;
     padding-left:0 !important;
   }
 
   .filter-btn{
+    flex:1 1 auto !important;
     min-width:0 !important;
     padding:7px 10px !important;
     font-size:.58rem !important;
   }
 
   .search-results{
-    padding-left:10px !important;
-    padding-right:10px !important;
+    grid-template-columns:1fr !important;
+    padding:16px 10px 120px !important;
     overflow-x:hidden !important;
   }
 
   .result-card{
     width:100% !important;
     max-width:100% !important;
+    min-height:120px !important;
   }
-}
 
-/* MOBILE FOOTER OVERLAP FIX */
-@media (max-width:768px){
+  /* Mobile house page */
+  #page-house{
+    height:100vh !important;
+    overflow:hidden !important;
+  }
+
+  .book-wrapper{
+    width:95vw !important;
+    height:70vh !important;
+  }
+
+  .book{
+    width:100% !important;
+    height:100% !important;
+  }
+
+  .book-page{
+    padding:18px !important;
+  }
+
+  .house-nav{
+    margin-top:10px !important;
+  }
+
+  .char-card{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  /* Mobile disclaimer */
   .disclaimer-bar{
     font-size:.58rem !important;
     padding:6px 8px !important;
@@ -655,32 +641,5 @@ body{font-family:'IM Fell English SC',serif}
     min-width:76px !important;
     padding:6px 8px !important;
     font-size:.65rem !important;
-  }
-
-  .search-results{
-    padding-bottom:120px !important;
-  }
-
-  .map-container{
-    padding-bottom:90px !important;
-  }
-}
-
-
-/* MOBILE MAP GAP FIX */
-@media (max-width:768px){
-  .map-container{
-    height:calc(100vh - 185px) !important;
-    padding-top:0 !important;
-  }
-
-  .map-stage{
-    top:58% !important;
-    width:175vw !important;
-  }
-
-  .map-legend,
-  .map-controls{
-    top:150px !important;
   }
 }
