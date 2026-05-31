@@ -65,6 +65,7 @@
     <div class="nav-tabs">
       <button class="nav-tab active">Map</button>
       <button class="nav-tab" onclick="navigateTo('search')">Search</button>
+      <button class="nav-tab" onclick="navigateTo('timeline')">Timeline</button>
     </div>
   </div>
 
@@ -182,9 +183,10 @@
       <span class="search-icon">⚔</span>
     </div>
     <div class="nav-tabs">
-      <button class="nav-tab" onclick="navigateTo('map')">Map</button>
-      <button class="nav-tab active">Search</button>
-    </div>
+  <button class="nav-tab" onclick="navigateTo('map')">Map</button>
+  <button class="nav-tab active">Search</button>
+  <button class="nav-tab" onclick="navigateTo('timeline')">Timeline</button>
+</div>
   </div>
   <div class="search-filters">
     <span class="filter-label">Filter:</span>
@@ -194,6 +196,21 @@
     <button class="filter-btn" onclick="setFilter('location',this)">Locations</button>
   </div>
   <div class="search-results" id="searchResults"></div>
+</div>
+
+<!-- ===== TIMELINE PAGE ===== -->
+<div class="page" id="page-timeline">
+  <div class="search-header-bar">
+    <button class="back-btn-sm" onclick="navigateTo('map')">← Map</button>
+    <div class="map-header-title">Lore Timeline</div>
+    <div class="nav-tabs">
+  <button class="nav-tab" onclick="navigateTo('map')">Map</button>
+  <button class="nav-tab" onclick="navigateTo('search')">Search</button>
+  <button class="nav-tab active">Timeline</button>
+</div>
+  </div>
+
+  <div class="timeline-scroll" id="timelineList"></div>
 </div>
 
 <script src="data.js"></script>

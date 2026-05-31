@@ -6,6 +6,7 @@ let mapZoom = 1;
 
 // ===== NAVIGATION =====
 function navigateTo(pageId) {
+  if(pageId === 'timeline'){ renderTimeline(); }
   const overlay = document.getElementById('flipOverlay');
   overlay.classList.add('flipping');
   setTimeout(() => {
@@ -281,6 +282,31 @@ function resetMapZoom(){
   mapPanX = 0;
   mapPanY = 0;
   applyMapZoom();
+}
+
+// ===== RENDER TIMELINE =====
+function renderTimeline(){
+  const list = document.getElementById('timelineList');
+  if(!list) return;
+
+  // clear
+  list.innerHTML = '';
+
+  TIMELINE_EVENTS
+    .sort((a,b)=>a.year-b.year)
+    .forEach((ev,i)=>{
+      const item = document.createElement('div');
+      item.className = 'timeline-item';
+
+      item.innerHTML = `
+        <div class="timeline-dot"></div>
+        ${i < TIMELINE_EVENTS.length-1 ? '<div class="timeline-line"></div>' : ''}
+        <div class="timeline-year">${ev.year < 0 ? ev.year+' BC' : ev.year+' AC'}</div>
+        <div class="timeline-title">${ev.title}</div>
+        <div class="timeline-desc">${ev.desc}</div>
+      `;
+      list.appendChild(item);
+    });
 }
 
 // ===== INIT =====

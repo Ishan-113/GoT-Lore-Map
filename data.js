@@ -274,3 +274,15 @@ const LOCATIONS = [
       'alt="' + house.name + ' sigil" class="sigil-img">';
   }
 })();
+
+/* ===== LORE TIMELINE ===== */
+const TIMELINE_EVENTS = [
+  { year: -12000, title: "The Long Night", desc: "The first White Walkers emerge and the Wall is raised by Bran the Builder." },
+  { year: -6000,  title: "Arrival of the Andals", desc: "Andal invaders cross the Narrow Sea, bringing the Seven-Pointed Star and the Faith of the Seven." },
+  { year: -300,   title: "Doom of Valyria", desc: "A cataclysm destroys the Valyrian Freehold, ending the empire of the dragon-lords." },
+  { year: -2,     title: "Aegon’s Conquest", desc: "Aegon Targaryen and his sisters land at Dragonstone and unite the Seven Kingdoms with dragonfire." },
+  { year: 281,    title: "Robert’s Rebellion", desc: "Robert Baratheon, Eddard Stark, and Jon Arryn overthrow the Mad King, ending Targaryen rule." },
+  { year: 298,    title: "Death of Jon Arryn", desc: "The Hand of the King dies mysteriously, setting the main events of A Game of Thrones in motion." },
+  { year: 299,    title: "Red Wedding", desc: "House Frey betrays Robb Stark; the North’s hopes of independence fall in a night of blood." },
+  { year: 300,    title: "Battle of the Bastards", desc: "Jon Snow retakes Winterfell from Ramsay Bolton, restoring House Stark in the North." }
+];
