@@ -70,6 +70,7 @@ function renderMap() {
     }
     container.appendChild(pin);
   });
+  enableTouchPins();
 
   const legend = document.getElementById('legendItems');
   if (!legend) return;
@@ -98,7 +99,6 @@ function enableTouchPins(){
 }
 document.addEventListener('DOMContentLoaded', () => {
   renderMap();
-enableTouchPins();
 enableLegendDropdown();
 enableMapDrag();
 centerMapView();
@@ -293,19 +293,20 @@ function renderTimeline(){
   list.innerHTML = '';
 
   TIMELINE_EVENTS
-    .sort((a,b)=>a.year-b.year)
-    .forEach((ev,i)=>{
-      const item = document.createElement('div');
-      item.className = 'timeline-item';
+     .sort((a,b)=>a.year-b.year)
+  .forEach((ev,i)=>{
+    const item = document.createElement('div');
+    item.className = 'timeline-item';
 
-      item.innerHTML = `
-        <div class="timeline-dot"></div>
-        ${i < TIMELINE_EVENTS.length-1 ? '<div class="timeline-line"></div>' : ''}
-        <div class="timeline-year">${ev.year < 0 ? ev.year+' BC' : ev.year+' AC'}</div>
-        <div class="timeline-title">${ev.title}</div>
-        <div class="timeline-desc">${ev.desc}</div>
-      `;
-      list.appendChild(item);
+    item.innerHTML = `
+      <div class="timeline-dot"></div>
+      ${i < TIMELINE_EVENTS.length-1 ? '<div class="timeline-line"></div>' : ''}
+      <div class="timeline-year">${ev.year < 0 ? ev.year+' BC' : ev.year+' AC'}</div>
+      <div class="timeline-title">${ev.title}</div>
+      <div class="timeline-desc">${ev.desc}</div>
+    `;
+
+    list.appendChild(item);
     });
 }
 
