@@ -127,7 +127,7 @@ function renderHousePage(houseKey) {
     const sc = ch.status || 'unknown';
     const sl = { alive: 'Living', dead: 'Deceased', unknown: 'Unknown' }[sc] || 'Unknown';
     card.innerHTML =
-      '<div class="char-avatar">' + ch.portrait + '</div>' +
+      '<div class="char-avatar" style="background:none;border:none">' + ch.portrait + '</div>' +
       '<div class="char-info"><div class="char-name">' + ch.name + '</div><div class="char-role">' + ch.title + '</div></div>' +
       '<div class="char-status ' + sc + '">' + sl + '</div>';
     card.addEventListener('click', () => { currentChar = ck; navigateTo('character'); });
@@ -143,7 +143,7 @@ function renderCharPage(charKey) {
 
   document.getElementById('breadHouse').textContent = h ? h.name : 'House';
   document.getElementById('breadChar').textContent = ch.name;
-  document.getElementById('charPortraitEmoji').textContent = ch.portrait;
+  document.getElementById('charPortraitEmoji').innerHTML = ch.portrait;
   document.getElementById('charBadgeSigil').innerHTML = h ? h.sigil : '⚔';
   document.getElementById('charBadgeHouse').textContent = h ? h.name : '';
   document.getElementById('charBadgeWords').textContent = h ? h.words : '';
@@ -194,7 +194,7 @@ function renderSearch(query) {
   if (searchFilter === 'all' || searchFilter === 'character') {
     Object.entries(CHARACTERS).forEach(([key, ch]) => {
       if (!q || ch.name.toLowerCase().includes(q) || ch.title.toLowerCase().includes(q) || ch.house.toLowerCase().includes(q))
-        items.push({ type: 'character', key, display: ch.name, sub: ch.title, sigil: ch.portrait });
+        items.push({ type: 'character', key, display: ch.name, sub: ch.title, sigil: ch.portrait, isSvg: true });
     });
   }
   if (searchFilter === 'all' || searchFilter === 'location') {
