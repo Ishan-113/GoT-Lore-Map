@@ -2,6 +2,8 @@ let currentHouse = null;
 let currentChar = null;
 let searchFilter = 'all';
 
+let mapZoom = 1;
+
 // ===== NAVIGATION =====
 function navigateTo(pageId) {
   const overlay = document.getElementById('flipOverlay');
@@ -34,11 +36,13 @@ function navigateTo(pageId) {
 
 // ===== MAP =====
 function renderMap() {
+  applyMapZoom();
   const container = document.getElementById('mapPins');
   if (!container) return;
   container.innerHTML = '';
   const tooltip = document.getElementById('mapTooltip');
   const mapEl = document.getElementById('mapContainer');
+  if (!tooltip || !mapEl) return;/*changes by gpt*/
 
   LOCATIONS.forEach(loc => {
     const h = loc.house ? HOUSES[loc.house] : null;
@@ -91,7 +95,10 @@ function enableTouchPins(){
             .forEach(p=>p.classList.remove('touch-show'))
   ));
 }
-document.addEventListener('DOMContentLoaded', enableTouchPins);
+document.addEventListener('DOMContentLoaded', () => {
+    renderMap();
+    enableTouchPins();
+});
 
 function positionTooltip(e, tooltip, container) {
   const rect = container.getBoundingClientRect();
@@ -252,3 +259,24 @@ function renderSearch(query) {
 
 // ===== INIT =====
 renderMap();
+
+
+
+
+function applyMapZoom(){
+  const stage = document.getElementById('mapStage');
+  if (!stage) return;
+
+  stage.style.width = `${1600 * mapZoom}px`;
+  stage.style.height = `${1000 * mapZoom}px`;
+}
+
+function zoomMap(amount){
+  mapZoom = Math.min(2.5, Math.max(0.6, mapZoom + amount));
+  applyMapZoom();
+}
+
+function resetMapZoom(){
+  mapZoom = 1;
+  applyMapZoom();
+}

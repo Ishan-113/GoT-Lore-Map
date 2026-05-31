@@ -196,61 +196,86 @@ body{font-family:'IM Fell English SC',serif}
    (append after the existing CSS)                */
 /* Allow vertical scrolling on small screens */
 @media (max-width: 768px){
-  html,body{overflow:auto}
 
-  /* Generic page container */
+  html, body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+  }
+
   .page{
-    position:relative;            /* was fixed */
-    min-height:100%;
-    overflow:auto;
-    display:block !important;     /* override flex if needed */
+    position:fixed;
+    inset:0;
+    min-height:100vh;
+    overflow:hidden;
+    display:none;
   }
 
-  /* Home screen */
-  .home-title{font-size:clamp(1.3rem,6vw,2rem)}
-  .sigil-ring{width:120px;height:120px}
-  .enter-btn{padding:12px 38px;font-size:.9rem}
+  .page.active{
+    display:flex;
+  }
 
-  /* Map header compresses & wraps */
+  #page-map{
+    flex-direction:column;
+    height:100vh;
+    overflow:hidden;
+  }
+
   .map-header{
+    height:auto;
+    min-height:70px;
     flex-wrap:wrap;
+    padding:8px 10px;
     gap:8px;
-    padding:6px 12px;
-    min-height:auto;
   }
-  .map-header-title{font-size:.95rem;flex:1 0 100%}
 
-  /* Nav tabs become swipeable chips */
-  .nav-tabs{overflow-x:auto;white-space:nowrap}
+  .map-header-title{
+    font-size:.85rem;
+    width:100%;
+  }
+
+  .nav-tabs{
+    width:100%;
+    overflow-x:auto;
+    white-space:nowrap;
+  }
+
   .nav-tab{
-    font-size:.65rem;
-    padding:4px 12px;
+    font-size:.6rem;
+    padding:5px 10px;
     flex:0 0 auto;
   }
 
-  /* Map container – keep aspect */
-  .map-container{height:calc(100vh - 120px)}
-  .map-img{object-fit:contain}
-
-  /* Pin label & tooltip font-sizes */
-  .pin-label{font-size:.55rem}
-  #mapTooltip{font-size:.7rem;max-width:240px}
-
-  /* Legend rows two-columns */
-  #legendItems{
-    flex-wrap:wrap;
-    gap:6px 12px;
-    justify-content:center;
+  .map-container{
+    flex:1;
+    height:auto;
+    overflow:hidden;
   }
-  .legend-item .legend-text{font-size:.7rem}
 
-  /* House “book” layout → stacked */
-  #bookLayout{flex-direction:column}
-  #bookLeft,#bookRight{width:100%;max-width:100%}
+  .map-img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
 
-  /* Character profile badges wrap */
-  #charBadges{flex-wrap:wrap;gap:6px}
-  .char-badge{min-width:46%}
+  .map-legend{
+    display:none;
+  }
+
+  .pin-label{
+    font-size:.48rem;
+  }
+
+  .pin-sigil svg,
+  .pin-sigil img{
+    width:18px;
+    height:18px;
+  }
+
+  .map-tooltip{
+    max-width:220px;
+    font-size:.7rem;
+  }
 }
 /* === global credits / disclaimer === */
 .disclaimer-bar{
@@ -311,4 +336,263 @@ body{font-family:'IM Fell English SC',serif}
 .pin-sigil .sigil-img{
   width:28px;
   height:28px;
+}
+
+
+
+
+/*changes by gpt*/
+@media (max-width:768px){
+
+  html,
+  body{
+    overflow:auto;
+  }
+
+  .map-header{
+    flex-wrap:wrap;
+    height:auto;
+    padding:10px;
+  }
+
+  .map-header-title{
+    font-size:0.8rem;
+  }
+
+  .nav-tabs{
+    width:100%;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
+  .nav-tab{
+    padding:5px 8px;
+    font-size:0.6rem;
+  }
+
+  .book{
+    width:95vw;
+    height:auto;
+  }
+
+  .book-page{
+    padding:15px;
+  }
+
+  .char-card{
+    flex-direction:column;
+    text-align:center;
+  }
+
+  .search-results{
+    grid-template-columns:1fr;
+  }
+
+  .map-tooltip{
+    width:220px;
+    font-size:0.75rem;
+  }
+}
+
+
+
+.map-container{
+  position:relative;
+  flex:1;
+  overflow:auto;
+  background:#050208;
+}
+
+.map-stage{
+  position:relative;
+  width:100%;
+  min-width:900px;
+}
+
+.map-img{
+  display:block;
+  width:100%;
+  height:auto;
+}
+
+#mapPins{
+  position:absolute;
+  inset:0;
+  z-index:20;
+}
+
+.map-pin{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  z-index:25;
+}
+
+/* ===== FINAL MAP FIX: responsive stage + stable pins + zoom controls ===== */
+#page-map{
+  flex-direction:column;
+  height:100vh;
+  overflow:hidden;
+}
+
+.map-container{
+  position:relative;
+  flex:1;
+  width:100%;
+  overflow:auto;
+  background:#050208;
+  cursor:grab;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+}
+
+.map-stage{
+  position:relative;
+  width:min(100%, 964px);
+  max-width:none;
+  flex:0 0 auto;
+  transform-origin:center center;
+}
+
+.map-img{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit:contain;
+  filter:sepia(.3) contrast(1.1) brightness(.9);
+  user-select:none;
+  pointer-events:none;
+}
+
+#mapPins{
+  position:absolute;
+  inset:0;
+  z-index:20;
+  pointer-events:none;
+}
+
+.map-pin{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  z-index:25;
+  pointer-events:auto;
+  cursor:pointer;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:2px;
+}
+
+.pin-sigil{
+  width:24px;
+  height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  filter:drop-shadow(0 2px 4px #000);
+}
+
+.pin-sigil img,
+.legend-item img,
+.house-sigil-large img,
+.badge-sigil img,
+.result-sigil img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+.pin-dot{
+  width:10px;
+  height:10px;
+  background:var(--gold);
+  border:2px solid var(--gold-light);
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(201,168,76,.9);
+}
+
+.pin-label{
+  font-family:'Cinzel',serif;
+  font-size:.58rem;
+  letter-spacing:.08em;
+  color:var(--gold-light);
+  text-shadow:0 2px 5px #000,0 0 8px #000;
+  white-space:nowrap;
+  background:rgba(0,0,0,.35);
+  padding:1px 5px;
+  border-radius:999px;
+}
+
+.map-controls{
+  position:absolute;
+  top:16px;
+  right:16px;
+  z-index:50;
+  display:flex;
+  gap:6px;
+  background:rgba(10,5,0,.8);
+  border:1px solid var(--gold-dark);
+  padding:6px;
+}
+
+.map-controls button{
+  font-family:'Cinzel',serif;
+  color:var(--gold-light);
+  background:rgba(201,168,76,.08);
+  border:1px solid var(--gold-dark);
+  padding:6px 10px;
+  cursor:pointer;
+}
+
+.map-controls button:hover{
+  background:rgba(201,168,76,.18);
+}
+
+.map-tooltip{
+  position:absolute;
+  z-index:60;
+  pointer-events:none;
+  background:linear-gradient(135deg,rgba(20,10,0,.95),rgba(30,15,5,.98));
+  border:1px solid var(--gold-dark);
+  padding:14px 18px;
+  min-width:200px;
+  max-width:260px;
+  display:none;
+}
+
+.map-tooltip.visible{display:block;}
+
+.map-legend{
+  position:absolute;
+  bottom:16px;
+  left:16px;
+  z-index:50;
+  background:rgba(10,5,0,.85);
+  border:1px solid var(--gold-dark);
+  padding:12px 16px;
+  min-width:160px;
+  max-height:45vh;
+  overflow:auto;
+}
+
+.legend-item img{width:22px;height:22px;flex-shrink:0;}
+
+@media (max-width: 768px){
+  .map-container{
+    align-items:flex-start;
+    justify-content:flex-start;
+    padding:10px;
+  }
+  .map-stage{
+    width:964px;
+  }
+  .map-controls{
+    top:10px;
+    right:10px;
+  }
+  .map-legend{
+    display:none;
+  }
 }
