@@ -276,4 +276,12 @@ body{font-family:'IM Fell English SC',serif}
   font-family:'Cinzel',serif;font-size:.8rem;
   background:var(--gold-dark);color:#fff;border:none;cursor:pointer;}
 
+  /* style.css  — put near your other sigil styles */
+.sigil-img, .sigil-icon{      /* class used below */
+  width:40px;
+  height:40px;
+  object-fit:cover;           /* crops non-square art nicely */
+  display:block;
+}
+
 .inner-disclaimer{display:none;}  /* hide duplicate inline notice */

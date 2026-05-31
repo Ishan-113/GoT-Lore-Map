@@ -1,6 +1,28 @@
 const HOUSES = {
-  stark:{name:"House Stark",sigil:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="40" height="40"><rect width="60" height="60" fill="#f0f0f0" rx="3"/><path d="M10 42 C10 42 12 36 14 34 C13 30 14 26 18 24 C18 24 16 20 17 17 C19 19 20 20 22 20 C24 17 27 15 30 15 C33 15 36 16 38 19 C40 18 42 17 44 18 C43 21 42 24 43 26 C46 28 47 32 46 36 C48 38 49 42 49 42 L44 40 C43 43 41 46 38 47 L37 44 C35 46 32 47 30 47 C28 47 25 46 23 44 L22 47 C19 46 17 43 16 40 Z" fill="#808080" stroke="#555" stroke-width="1"/><circle cx="24" cy="23" r="2" fill="#1a1a1a"/><circle cx="36" cy="23" r="2" fill="#1a1a1a"/><path d="M26 30 Q30 34 34 30" stroke="#1a1a1a" stroke-width="1.5" fill="none"/><path d="M18 17 L14 10 M18 19 L13 14" stroke="#808080" stroke-width="2" stroke-linecap="round"/><path d="M42 18 L46 11 M42 20 L47 15" stroke="#808080" stroke-width="2" stroke-linecap="round"/></svg>',words:'"Winter is Coming"',region:"The North",seat:"Winterfell",color:"#4a6080",
-    characters:["eddard","robb","sansa","arya","bran","catelyn"]},
+  // data.js  — inside the HOUSES declaration
+stark:{
+  name: "House Stark",
+
+  /* 1️⃣  Use the LOCAL image you saved */
+  sigil:
+    '<img src="assets/sigils/House_Stark.jpg" '+
+    'alt="Direwolf sigil" class="sigil-img">',
+
+  /* 2️⃣  Optional: if you later convert it to SVG, use this instead:
+  sigil:
+    '<svg class="sigil-icon" viewBox="0 0 60 60">'+
+      '<use href="assets/sigils/House_Stark.svg#starkSigil"></use>'+
+    '</svg>',
+     ———  and be sure the SVG file’s root tag is:
+     <svg id="starkSigil" …>
+  */
+
+  words : '"Winter is Coming"',
+  region: "The North",
+  seat  : "Winterfell",
+  color : "#4a6080",
+  characters:["eddard","robb","sansa","arya","bran","catelyn"]
+},
   lannister:{name:"House Lannister",sigil:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="40" height="40"><rect width="60" height="60" fill="#8b0000" rx="3"/><path d="M30 8 C26 8 22 11 20 14 C17 12 14 13 13 16 C15 18 17 19 19 19 C17 22 17 26 19 29 L17 32 L20 31 L21 35 L24 32 C26 34 28 35 30 35 C32 35 34 34 36 32 L39 35 L40 31 L43 32 L41 29 C43 26 43 22 41 19 C43 19 45 18 47 16 C46 13 43 12 40 14 C38 11 34 8 30 8Z" fill="#FFD700" stroke="#c9a84c" stroke-width="1"/><path d="M24 35 L22 44 L30 40 L38 44 L36 35" fill="#FFD700" stroke="#c9a84c" stroke-width="1"/><circle cx="25" cy="20" r="2" fill="#8b0000"/><circle cx="35" cy="20" r="2" fill="#8b0000"/><path d="M26 26 Q30 30 34 26" stroke="#8b0000" stroke-width="1.5" fill="none"/><path d="M20 14 C18 10 20 7 23 8" stroke="#FFD700" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M40 14 C42 10 40 7 37 8" stroke="#FFD700" stroke-width="2" fill="none" stroke-linecap="round"/></svg>',words:'"Hear Me Roar"',region:"The Westerlands",seat:"Casterly Rock",color:"#806030",
     characters:["tywin","cersei","jaime","tyrion"]},
   baratheon:{name:"House Baratheon",sigil:'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 60" width="40" height="40"><rect width="60" height="60" fill="#FFD700" rx="3"/><path d="M22 38 L22 28 C18 26 15 22 15 18 C15 14 18 12 20 13" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><path d="M38 38 L38 28 C42 26 45 22 45 18 C45 14 42 12 40 13" fill="none" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/><ellipse cx="30" cy="28" rx="10" ry="13" fill="#1a1a1a"/><path d="M20 13 L16 6 M20 13 L14 10 M20 14 L17 7" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/><path d="M40 13 L44 6 M40 13 L46 10 M40 14 L43 7" stroke="#1a1a1a" stroke-width="2.5" stroke-linecap="round"/><circle cx="26" cy="25" r="2" fill="#FFD700"/><circle cx="34" cy="25" r="2" fill="#FFD700"/><path d="M23 5 L25 8 L27 6 L29 9 L31 6 L33 8 L35 5 L37 8 L23 8 Z" fill="#1a1a1a"/><ellipse cx="26" cy="44" rx="4" ry="6" fill="#1a1a1a"/><ellipse cx="34" cy="44" rx="4" ry="6" fill="#1a1a1a"/></svg>',words:'"Ours is the Fury"',region:"The Stormlands",seat:"Storm\'s End",color:"#303050",
