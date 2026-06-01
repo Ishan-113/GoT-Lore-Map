@@ -337,40 +337,129 @@ function renderTimeline() {
   list.innerHTML = '';
 
   if (typeof TIMELINE_EVENTS === 'undefined' || !TIMELINE_EVENTS.length) {
-    list.innerHTML = '<div style="text-align:center;color:rgba(201,168,76,.5);padding:60px;font-family:\'IM Fell English\',serif;font-style:italic">No timeline events found.</div>';
+    const empty = document.createElement('div');
+    empty.className = 'timeline-empty';
+    empty.textContent = "No records found in the maester's timeline.";
+    list.appendChild(empty);
     return;
   }
 
+  const events = [...TIMELINE_EVENTS].sort((a, b) => {
+    const yearDiff = a.year - b.year;
+    if (yearDiff !== 0) return yearDiff;
+    return (a.order || 0) - (b.order || 0);
+  });
+
+  const intro = document.createElement('div');
+  intro.className = 'timeline-intro';
+  intro.innerHTML =
+    '<div class="timeline-kicker">Chronicle of the Realm</div>' +
+    '<div class="timeline-intro-title">From the Dawn Age to Winter Returned</div>' +
+    '<div class="timeline-intro-copy">Trace the pressure points that shaped Westeros: migrations, prophecies, dragonfire, rebellions, betrayals, and the wars that broke old certainties.</div>';
+  list.appendChild(intro);
+
   const fragment = document.createDocumentFragment();
-  [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year).forEach((ev, i, arr) => {
-    const item = document.createElement('div');
-    item.className = 'timeline-item';
-    item.style.setProperty('--item-index', i);
-    // FIX: Use textContent for user-data fields to prevent XSS
+  let activeEra = '';
+  let visualIndex = 0;
+
+  events.forEach((ev, eventIndex) => {
+    if (ev.era && ev.era !== activeEra) {
+      activeEra = ev.era;
+      const era = document.createElement('div');
+      era.className = 'timeline-era-marker';
+      era.style.setProperty('--item-index', visualIndex++);
+      const eraLabel = document.createElement('span');
+      eraLabel.textContent = activeEra;
+      era.appendChild(eraLabel);
+      fragment.appendChild(era);
+    }
+
+    const item = document.createElement('article');
+    item.className = 'timeline-item tone-' + (ev.tone || 'gold');
+    item.style.setProperty('--item-index', visualIndex++);
+
+    const datePlate = document.createElement('div');
+    datePlate.className = 'timeline-dateplate';
+    datePlate.textContent = formatTimelineDate(ev);
+
+    const rail = document.createElement('div');
+    rail.className = 'timeline-rail';
     const dot = document.createElement('div');
     dot.className = 'timeline-dot';
-    const year = document.createElement('div');
-    year.className = 'timeline-year';
-    year.textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + ' AC';
+    rail.appendChild(dot);
+    if (eventIndex < events.length - 1) {
+      const line = document.createElement('div');
+      line.className = 'timeline-line';
+      rail.appendChild(line);
+    }
+
+    const card = document.createElement('div');
+    card.className = 'timeline-card';
+
+    const top = document.createElement('div');
+    top.className = 'timeline-card-top';
+
+    const meta = document.createElement('div');
+    meta.className = 'timeline-meta';
+    if (ev.type) meta.appendChild(createTimelineChip(ev.type, 'timeline-chip type'));
+    if (ev.location) meta.appendChild(createTimelineChip(ev.location, 'timeline-chip location'));
+
+    const sigils = document.createElement('div');
+    sigils.className = 'timeline-sigils';
+    (ev.factions || []).forEach(key => {
+      const house = HOUSES[key];
+      if (!house) return;
+      const sigil = document.createElement('span');
+      sigil.className = 'timeline-sigil';
+      sigil.title = house.name;
+      sigil.innerHTML = house.sigil;
+      sigils.appendChild(sigil);
+    });
+
+    top.appendChild(meta);
+    if (sigils.children.length) top.appendChild(sigils);
+
     const title = document.createElement('div');
     title.className = 'timeline-title';
     title.textContent = ev.title;
+
     const desc = document.createElement('div');
     desc.className = 'timeline-desc';
     desc.textContent = ev.desc;
 
-    item.appendChild(dot);
-    if (i < arr.length - 1) {
-      const line = document.createElement('div');
-      line.className = 'timeline-line';
-      item.appendChild(line);
+    card.appendChild(top);
+    card.appendChild(title);
+    card.appendChild(desc);
+
+    if (ev.consequence) {
+      const consequence = document.createElement('div');
+      consequence.className = 'timeline-consequence';
+      const label = document.createElement('span');
+      label.textContent = 'Aftermath';
+      consequence.appendChild(label);
+      consequence.appendChild(document.createTextNode(ev.consequence));
+      card.appendChild(consequence);
     }
-    item.appendChild(year);
-    item.appendChild(title);
-    item.appendChild(desc);
+
+    item.appendChild(datePlate);
+    item.appendChild(rail);
+    item.appendChild(card);
     fragment.appendChild(item);
   });
+
   list.appendChild(fragment);
+}
+
+function formatTimelineDate(ev) {
+  if (ev.date) return ev.date;
+  return ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + ' AC';
+}
+
+function createTimelineChip(text, className) {
+  const chip = document.createElement('span');
+  chip.className = className;
+  chip.textContent = text;
+  return chip;
 }
 
 // ===== LEGEND DROPDOWN =====
