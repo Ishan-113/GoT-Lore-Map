@@ -4,12 +4,12 @@ let searchFilter = 'all';
 let mapZoom = 1;
 let mapPanX = 0;
 let mapPanY = 0;
-const PAGE_TRANSITION_SWAP_MS = 320;
-const PAGE_TRANSITION_TOTAL_MS = 760;
+let mapRendered = false;
+const PAGE_TRANSITION_SWAP_MS = 110;
+const PAGE_TRANSITION_TOTAL_MS = 240;
 
 // ===== NAVIGATION =====
 function navigateTo(pageId) {
-  if (pageId === 'timeline') { renderTimeline(); }
   if (pageId === 'search') {
     searchFilter = 'all';
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -30,6 +30,9 @@ function navigateTo(pageId) {
       p.style.display = 'none';
       p.style.opacity = '0';
     });
+
+    if (pageId === 'timeline') renderTimeline();
+
     const target = document.getElementById('page-' + pageId);
     if (target) {
       target.style.display = 'flex';
@@ -56,6 +59,10 @@ function navigateTo(pageId) {
 function renderMap() {
   const container = document.getElementById('mapPins');
   if (!container) return;
+  if (mapRendered) {
+    applyMapZoom();
+    return;
+  }
   container.innerHTML = '';
   applyMapZoom();
   const tooltip = document.getElementById('mapTooltip');
@@ -119,6 +126,7 @@ function renderMap() {
     item.addEventListener('click', () => { currentHouse = key; navigateTo('house'); });
     legend.appendChild(item);
   });
+  mapRendered = true;
 }
 
 // ===== TOUCH PINS =====
@@ -598,6 +606,7 @@ function enableMapDrag() {
 function enableHomeParallax() {
   const home = document.getElementById('page-home');
   if (!home || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
   let ticking = false;
   let nextX = 0;
@@ -630,7 +639,6 @@ function escapeHtml(str) {
 
 // ===== INIT — run once after DOM ready =====
 document.addEventListener('DOMContentLoaded', () => {
-  renderMap();
   enableLegendDropdown();
   enableMapDrag();
   enableHomeParallax();

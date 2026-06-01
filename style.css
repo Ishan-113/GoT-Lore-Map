@@ -2542,3 +2542,114 @@ button:focus-visible,
     font-size:.58rem !important;
   }
 }
+
+/* ===== FINAL PERFORMANCE PASS ===== */
+.page{
+  transition:opacity .16s ease !important;
+}
+
+.page-flip-overlay{
+  opacity:0;
+  clip-path:none !important;
+  background:rgba(4,2,0,.82) !important;
+  transform:translateZ(0);
+  will-change:opacity;
+}
+
+.page-flip-overlay::before{
+  display:block;
+  inset:0;
+  background:linear-gradient(90deg,transparent,rgba(226,180,98,.24),transparent);
+  filter:none !important;
+  transform:translate3d(-110%,0,0);
+}
+
+.page-flip-overlay::after{
+  display:none !important;
+}
+
+.page-flip-overlay.flipping{
+  animation:fastRealmFade .24s ease-out forwards !important;
+}
+
+.page-flip-overlay.flipping::before{
+  animation:fastRealmWipe .24s ease-out forwards !important;
+}
+
+@keyframes fastRealmFade{
+  0%,100%{opacity:0}
+  42%,64%{opacity:1}
+}
+
+@keyframes fastRealmWipe{
+  from{opacity:.75;transform:translate3d(-110%,0,0)}
+  to{opacity:.35;transform:translate3d(110%,0,0)}
+}
+
+body::before,
+.timeline-intro::before,
+.timeline-card::before,
+.pin-dot::after,
+#page-timeline .timeline-dot::after{
+  display:none !important;
+}
+
+.house-bg{
+  background-image:url('assets/map.webp');
+  filter:none !important;
+}
+
+.home-bg,
+.map-img,
+#page-timeline::before{
+  filter:none !important;
+  animation:none !important;
+}
+
+.home-bg{
+  transition:opacity .16s ease !important;
+}
+
+.map-stage,
+.book-wrapper,
+.house-sigil-large,
+.house-sigil-large svg,
+.sigil-ring,
+.sigil-center{
+  filter:none !important;
+  animation:none !important;
+}
+
+.map-header,
+.search-header-bar,
+.char-header,
+.map-controls,
+.map-legend,
+.map-tooltip,
+.timeline-intro,
+.timeline-card,
+.disclaimer-bar{
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+}
+
+.page.active.page-visible .map-header,
+.page.active.page-visible .search-header-bar,
+.page.active.page-visible .char-header,
+.page.active.page-visible .home-content,
+.page.active.page-visible .book-wrapper,
+.page.active.page-visible .char-scroll,
+.page.active.page-visible .timeline-scroll,
+.map-pin,
+.timeline-intro,
+.timeline-era-marker,
+.timeline-item,
+#page-timeline .timeline-line,
+.book,
+.char-scroll{
+  animation:none !important;
+}
+
+.map-pin{
+  will-change:auto;
+}
