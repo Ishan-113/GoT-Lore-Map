@@ -5,54 +5,118 @@ let mapZoom = 1;
 let mapPanX = 0;
 let mapPanY = 0;
 let mapRendered = false;
-const PAGE_TRANSITION_SWAP_MS = 110;
-const PAGE_TRANSITION_TOTAL_MS = 240;
+let pageTransitionTimer = null;
+let pageTransitionClearTimer = null;
+const PAGE_TRANSITION_SWAP_MS = 240;
+const PAGE_TRANSITION_TOTAL_MS = 600;
+function isMajorTransition(fromPage, toPage) {
+  const majorRoutes = [
+    ['home', 'map'],
+    ['map', 'home'],
+    ['map', 'house'],
+    ['house', 'map'],
+    ['house', 'character'],
+    ['character', 'house']
+  ];
+
+  return majorRoutes.some(
+    ([from, to]) => from === fromPage && to === toPage
+  );
+}
 
 // ===== NAVIGATION =====
+function resetSearchFilter() {
+  searchFilter = 'all';
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const allBtn = document.querySelector('.filter-btn');
+  if (allBtn) allBtn.classList.add('active');
+}
+
+function preparePage(pageId) {
+  if (pageId === 'timeline') renderTimeline();
+  if (pageId === 'house' && currentHouse) renderHousePage(currentHouse);
+  if (pageId === 'character' && currentChar) renderCharPage(currentChar);
+  if (pageId === 'map') renderMap();
+  if (pageId === 'search') {
+    renderSearch('');
+    const si = document.getElementById('searchInput');
+    if (si) si.value = '';
+  }
+}
+
+function clearPageTransition(overlay, pages) {
+  if (overlay) overlay.classList.remove('flipping');
+  document.body.classList.remove('page-transitioning');
+  pages.forEach(p => p.classList.remove('page-leaving', 'page-entering'));
+}
+
 function navigateTo(pageId) {
   if (pageId === 'search') {
-    searchFilter = 'all';
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    const allBtn = document.querySelector('.filter-btn');
-    if (allBtn) allBtn.classList.add('active');
+    resetSearchFilter();
   }
 
   const overlay = document.getElementById('flipOverlay');
-  if (!overlay) return;
+  const pages = Array.from(document.querySelectorAll('.page'));
+  const target = document.getElementById('page-' + pageId);
+  if (!target) return;
+  const currentPageEl = document.querySelector('.page.active');
+const currentPageId = currentPageEl
+  ? currentPageEl.id.replace('page-', '')
+  : '';
+
+const useFlip = isMajorTransition(currentPageId, pageId);
+
+  clearTimeout(pageTransitionTimer);
+  clearTimeout(pageTransitionClearTimer);
+  clearPageTransition(overlay, pages);
+  preparePage(pageId);
+
+  const activePages = pages.filter(p => p.classList.contains('active'));
+  const alreadyActive = activePages.length === 1 && activePages[0] === target;
+  if (alreadyActive) return;
+
+  if (!overlay) {
+    pages.forEach(p => {
+      p.classList.remove('active', 'page-visible');
+      p.style.display = 'none';
+      p.style.opacity = '';
+    });
+    target.style.display = 'flex';
+    target.style.opacity = '';
+    target.classList.add('active', 'page-visible');
+    return;
+  }
+
+  document.body.classList.add('page-transitioning');
+  activePages.forEach(p => p.classList.add('page-leaving'));
   overlay.classList.remove('flipping');
   void overlay.offsetWidth;
+if (useFlip) {
+  navigator.vibrate?.(12);
   overlay.classList.add('flipping');
+} 
 
-  setTimeout(() => {
-    document.querySelectorAll('.page').forEach(p => {
+  pageTransitionTimer = setTimeout(() => {
+    pages.forEach(p => {
+      if (p === target) return;
       p.classList.remove('active');
       p.classList.remove('page-visible');
+      p.classList.remove('page-leaving', 'page-entering');
       p.style.display = 'none';
-      p.style.opacity = '0';
+      p.style.opacity = '';
     });
 
-    if (pageId === 'timeline') renderTimeline();
+    target.classList.remove('page-entering');
+    target.style.display = 'flex';
+    target.style.opacity = '';
+    target.classList.add('active');
+    void target.offsetWidth;
+    target.classList.add('page-visible', 'page-entering');
 
-    const target = document.getElementById('page-' + pageId);
-    if (target) {
-      target.style.display = 'flex';
-      requestAnimationFrame(() => {
-        target.style.opacity = '1';
-        target.classList.add('active');
-        target.classList.add('page-visible');
-      });
-    }
-    if (pageId === 'house' && currentHouse) renderHousePage(currentHouse);
-    if (pageId === 'character' && currentChar) renderCharPage(currentChar);
-    if (pageId === 'map') renderMap();
-    if (pageId === 'search') {
-      renderSearch('');
-      const si = document.getElementById('searchInput');
-      if (si) si.value = '';
-    }
-
-    setTimeout(() => overlay.classList.remove('flipping'), PAGE_TRANSITION_TOTAL_MS - PAGE_TRANSITION_SWAP_MS);
-  }, PAGE_TRANSITION_SWAP_MS);
+   pageTransitionClearTimer = setTimeout(() => {
+  clearPageTransition(overlay, pages);
+}, useFlip ? (PAGE_TRANSITION_TOTAL_MS - PAGE_TRANSITION_SWAP_MS) : 180);
+  }, useFlip ? PAGE_TRANSITION_SWAP_MS : 120);
 }
 
 // ===== MAP =====
@@ -206,9 +270,9 @@ function renderHousePage(houseKey) {
   }
 
   document.getElementById('houseSigilLarge').innerHTML = h.sigil;
-  document.getElementById('houseNameBook').textContent = h.name;
-  document.getElementById('houseWordsBook').textContent = h.words;
-  document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
+document.getElementById('houseNameBook').textContent = h.name;
+document.getElementById('houseWordsBook').textContent = h.words;
+document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
   document.getElementById('bookSpineText').textContent = h.name;
 
   const lines = document.getElementById('pageLines');

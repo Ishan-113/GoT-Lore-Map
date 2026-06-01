@@ -2545,45 +2545,7 @@ button:focus-visible,
 
 /* ===== FINAL PERFORMANCE PASS ===== */
 .page{
-  transition:opacity .16s ease !important;
-}
-
-.page-flip-overlay{
-  opacity:0;
-  clip-path:none !important;
-  background:rgba(4,2,0,.82) !important;
-  transform:translateZ(0);
-  will-change:opacity;
-}
-
-.page-flip-overlay::before{
-  display:block;
-  inset:0;
-  background:linear-gradient(90deg,transparent,rgba(226,180,98,.24),transparent);
-  filter:none !important;
-  transform:translate3d(-110%,0,0);
-}
-
-.page-flip-overlay::after{
-  display:none !important;
-}
-
-.page-flip-overlay.flipping{
-  animation:fastRealmFade .24s ease-out forwards !important;
-}
-
-.page-flip-overlay.flipping::before{
-  animation:fastRealmWipe .24s ease-out forwards !important;
-}
-
-@keyframes fastRealmFade{
-  0%,100%{opacity:0}
-  42%,64%{opacity:1}
-}
-
-@keyframes fastRealmWipe{
-  from{opacity:.75;transform:translate3d(-110%,0,0)}
-  to{opacity:.35;transform:translate3d(110%,0,0)}
+  transition:opacity .24s ease !important;
 }
 
 body::before,
@@ -2652,4 +2614,141 @@ body::before,
 
 .map-pin{
   will-change:auto;
+}
+
+/* ===== FINAL TRANSITION POLISH ===== */
+body.page-transitioning .page{
+  pointer-events:none;
+  will-change:opacity,transform;
+}
+
+body.page-transitioning .page.page-leaving{
+  animation:pageLeaveSoft .32s cubic-bezier(.22,.8,.2,1) both !important;
+}
+
+.page.page-entering{
+  animation:pageEnterSoft .48s cubic-bezier(.22,.8,.2,1) both !important;
+}
+
+.page-flip-overlay{
+  opacity:0;
+  clip-path:none !important;
+  background:
+    radial-gradient(ellipse at 50% 46%,rgba(234,184,96,.22),transparent 54%),
+    linear-gradient(90deg,rgba(5,2,0,0),rgba(5,2,0,.86) 28%,rgba(82,31,7,.96) 50%,rgba(5,2,0,.86) 72%,rgba(5,2,0,0)) !important;
+  transform:translateZ(0);
+  will-change:opacity !important;
+}
+
+.page-flip-overlay::before{
+  display:block !important;
+  inset:-10% -20%;
+  background:
+    linear-gradient(90deg,rgba(9,3,0,.96) 0%,rgba(98,43,12,.95) 18%,rgba(219,171,91,.78) 48%,rgba(84,31,8,.96) 78%,rgba(9,3,0,.96) 100%),
+    repeating-linear-gradient(92deg,rgba(255,237,184,.09) 0 1px,transparent 1px 22px);
+  box-shadow:0 0 55px rgba(0,0,0,.55);
+  filter:none !important;
+  transform:translate3d(-92%,0,0) skewX(-8deg) scaleX(.46);
+  transform-origin:center center;
+  will-change:opacity,transform;
+}
+
+.page-flip-overlay::after{
+  display:block !important;
+  top:-12%;
+  bottom:-12%;
+  left:50%;
+  width:3px;
+  min-width:3px;
+  background:linear-gradient(180deg,transparent,rgba(255,238,173,.95) 18%,rgba(255,199,88,.86) 50%,rgba(255,238,173,.95) 82%,transparent);
+  box-shadow:0 0 34px rgba(255,207,104,.62),0 0 12px rgba(255,236,180,.45);
+  transform:translate3d(-54vw,0,0) scaleY(.2);
+  will-change:opacity,transform;
+}
+
+.page-flip-overlay.flipping{
+  animation:realmTransitionVeil .72s cubic-bezier(.2,.78,.16,1) forwards !important;
+}
+
+.page-flip-overlay.flipping::before{
+  animation:realmParchmentTurn .72s cubic-bezier(.2,.78,.16,1) forwards !important;
+}
+
+.page-flip-overlay.flipping::after{
+  animation:realmGoldEdge .72s cubic-bezier(.2,.78,.16,1) forwards !important;
+}
+
+@keyframes realmTransitionVeil{
+  0%{opacity:0}
+  18%{opacity:.78}
+  38%{opacity:.98}
+  62%{opacity:.92}
+  100%{opacity:0}
+}
+
+@keyframes realmParchmentTurn{
+  0%{opacity:0;transform:translate3d(-92%,0,0) skewX(-8deg) scaleX(.46)}
+  18%{opacity:.92}
+  42%{opacity:.96;transform:translate3d(-4%,0,0) skewX(-2deg) scaleX(1)}
+  68%{opacity:.72;transform:translate3d(24%,0,0) skewX(4deg) scaleX(.78)}
+  100%{opacity:0;transform:translate3d(92%,0,0) skewX(8deg) scaleX(.46)}
+}
+
+@keyframes realmGoldEdge{
+  0%{opacity:0;transform:translate3d(-54vw,0,0) scaleY(.22)}
+  24%{opacity:.95;transform:translate3d(-18vw,0,0) scaleY(.9)}
+  48%{opacity:1;transform:translate3d(0,0,0) scaleY(1)}
+  72%{opacity:.7;transform:translate3d(20vw,0,0) scaleY(.86)}
+  100%{opacity:0;transform:translate3d(54vw,0,0) scaleY(.2)}
+}
+
+
+body.page-transition-light .page.page-leaving{
+  animation:pageLeaveQuick .16s cubic-bezier(.22,.8,.2,1) both !important;
+}
+
+body.page-transition-light .page.page-entering{
+  animation:pageEnterQuick .22s cubic-bezier(.22,.8,.2,1) both !important;
+}
+
+body.page-transition-light .page-flip-overlay,
+body.page-transition-light .page-flip-overlay::before,
+body.page-transition-light .page-flip-overlay::after{
+  animation:none !important;
+  opacity:0 !important;
+}
+
+
+@keyframes pageLeaveQuick{
+  from{opacity:1;transform:translate3d(0,0,0)}
+  to{opacity:0;transform:translate3d(0,4px,0)}
+}
+
+@keyframes pageEnterQuick{
+  from{opacity:0;transform:translate3d(0,-4px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+@keyframes pageLeaveSoft{
+  from{opacity:1;transform:translate3d(0,0,0) scale(1)}
+  to{opacity:.48;transform:translate3d(0,6px,0) scale(.988)}
+}
+
+@keyframes pageEnterSoft{
+  0%{opacity:0;transform:translate3d(0,-8px,0) scale(1.012)}
+  70%{opacity:1}
+  100%{opacity:1;transform:translate3d(0,0,0) scale(1)}
+}
+
+@media (prefers-reduced-motion:reduce){
+  body.page-transitioning .page.page-leaving,
+  .page.page-entering,
+  .page-flip-overlay.flipping::before,
+  .page-flip-overlay.flipping::after{
+    animation:none !important;
+  }
+
+  .page-flip-overlay.flipping{
+    animation:transitionReducedFade .32s ease forwards !important;
+  }
 }
