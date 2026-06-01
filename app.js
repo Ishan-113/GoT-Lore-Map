@@ -81,7 +81,24 @@ function renderMap() {
     });
     pin.addEventListener('mousemove', e => positionTooltip(e, tooltip, mapEl));
     pin.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
+
+    // Mobile: show tooltip info when touch-show is toggled
+    const observer = new MutationObserver(() => {
+      if (pin.classList.contains('touch-show')) {
+        document.getElementById('tooltipHouse').textContent = h ? h.name : 'Free City / Notable Location';
+        document.getElementById('tooltipLocation').textContent = loc.name;
+        document.getElementById('tooltipDesc').textContent = loc.desc;
+        tooltip.classList.add('visible', 'mobile-pin-tooltip');
+      } else {
+        // Only hide if this pin's tooltip is showing
+        if (tooltip.classList.contains('mobile-pin-tooltip')) {
+          tooltip.classList.remove('visible', 'mobile-pin-tooltip');
+        }
+      }
+    });
+    observer.observe(pin, { attributes: true, attributeFilter: ['class'] });
     if (loc.house) {
+      pin.dataset.house = loc.house;
       pin.addEventListener('click', () => { currentHouse = loc.house; navigateTo('house'); });
     }
     container.appendChild(pin);
@@ -102,7 +119,10 @@ function renderMap() {
 }
 
 // ===== TOUCH PINS =====
-// FIX: Use a flag per-pin to ignore the dismiss fired on the same touch that opened it
+// Mobile pin interaction:
+// - First tap: show label/tooltip (touch-show)
+// - Second tap on same pin (already touch-show): navigate if it has a house
+// - Tap elsewhere: dismiss
 let _touchPinsDismissAttached = false;
 let _suppressDismiss = false;
 
@@ -110,15 +130,32 @@ function enableTouchPins() {
   document.querySelectorAll('.map-pin').forEach(pin => {
     pin.addEventListener('touchstart', e => {
       e.stopPropagation();
-      e.preventDefault();
-      _suppressDismiss = true; // suppress the global dismiss for this touch cycle
+      // DO NOT call preventDefault here — it blocks the synthetic click
+      // needed for navigation. Instead manage state manually.
+      _suppressDismiss = true;
+
+      const alreadyShown = pin.classList.contains('touch-show');
+
+      // Dismiss all other pins
       document.querySelectorAll('.map-pin.touch-show').forEach(p => {
         if (p !== pin) p.classList.remove('touch-show');
       });
-      pin.classList.toggle('touch-show');
-      // Allow dismiss again after this event cycle fully completes
+
+      if (alreadyShown) {
+        // Second tap on an already-revealed pin: navigate
+        pin.classList.remove('touch-show');
+        const houseKey = pin.dataset.house;
+        if (houseKey) {
+          currentHouse = houseKey;
+          navigateTo('house');
+        }
+      } else {
+        // First tap: just reveal
+        pin.classList.add('touch-show');
+      }
+
       requestAnimationFrame(() => { _suppressDismiss = false; });
-    }, { passive: false });
+    }, { passive: true });
   });
 
   if (!_touchPinsDismissAttached) {
@@ -126,7 +163,7 @@ function enableTouchPins() {
     document.addEventListener('touchstart', () => {
       if (_suppressDismiss) return;
       document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
-    });
+    }, { passive: true });
   }
 }
 
