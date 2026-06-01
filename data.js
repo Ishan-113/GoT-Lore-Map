@@ -237,20 +237,20 @@ const CHARACTERS = {
 };
 
 const LOCATIONS = [
-  {id:"winterfell",name:"Winterfell",house:"stark",x:19,y:14,desc:"Seat of House Stark, ancient castle of the Kings of Winter, warmed by hot springs beneath its walls."},
-  {id:"the_twins",name:"The Twins",house:null,x:21,y:29,desc:"Twin castles of House Frey controlling the crossing of the Green Fork."},
-  {id:"pyke",name:"Pyke",house:"greyjoy",x:10,y:34,desc:"Wave-battered seat of House Greyjoy on the Iron Islands, built on sea stacks above a grey sea."},
-  {id:"the_eyrie",name:"The Eyrie",house:"arryn",x:27,y:34,desc:"Sky fortress of House Arryn, perched atop the Mountains of the Moon. Impregnable by force."},
-  {id:"riverrun",name:"Riverrun",house:"tully",x:21,y:40,desc:"Island fortress of House Tully at the fork of the Red Fork and the Tumblestone rivers."},
-  {id:"harrenhal",name:"Harrenhal",house:null,x:24,y:39,desc:"Gigantic cursed ruin on the shore of the Gods Eye, melted by dragonfire during Aegon's Conquest."},
-  {id:"casterly_rock",name:"Casterly Rock",house:"lannister",x:18,y:45,desc:"Seat of House Lannister, built into a great rock above goldmines of legendary wealth."},
-  {id:"dragonstone",name:"Dragonstone",house:"targaryen",x:30,y:49,desc:"Island fortress of House Targaryen. Ancient seat of the heir to the Iron Throne. Dragons were born here."},
-  {id:"kingslanding",name:"King's Landing",house:"baratheon",x:27,y:54,desc:"Capital of the Seven Kingdoms, home of the Iron Throne and the Red Keep."},
-  {id:"highgarden",name:"Highgarden",house:"tyrell",x:18,y:59,desc:"Seat of House Tyrell in the heart of the Reach, the most fertile lands of Westeros."},
-  {id:"storms_end",name:"Storm's End",house:"baratheon",x:28,y:62,desc:"Mighty castle of House Baratheon on Shipbreaker Bay, built to face endless storms."},
-  {id:"sunspear",name:"Sunspear",house:"martell",x:27,y:71,desc:"Sandstone seat of House Martell in the deserts of Dorne, ancient and unbowed."},
-  {id:"pentos",name:"Pentos",house:null,x:48,y:39,desc:"Free city of Essos where Daenerys Targaryen began her journey to reclaim her birthright."},
-  {id:"dothraki_sea",name:"Dothraki Sea",house:null,x:68,y:37,desc:"Vast grassland of Essos, crossed by khalasars and feared by the Free Cities."}
+  {id:"winterfell",name:"Winterfell",house:"stark",x:21.0,y:20.7,desc:"Seat of House Stark, ancient castle of the Kings of Winter, warmed by hot springs beneath its walls."},
+  {id:"the_twins",name:"The Twins",house:null,x:19.5,y:39.2,desc:"Twin castles of House Frey controlling the crossing of the Green Fork."},
+  {id:"pyke",name:"Pyke",house:"greyjoy",x:11.0,y:42.7,desc:"Wave-battered seat of House Greyjoy on the Iron Islands, built on sea stacks above a grey sea."},
+  {id:"the_eyrie",name:"The Eyrie",house:"arryn",x:27.7,y:42.6,desc:"Sky fortress of House Arryn, perched atop the Mountains of the Moon. Impregnable by force."},
+  {id:"riverrun",name:"Riverrun",house:"tully",x:17.4,y:47.8,desc:"Island fortress of House Tully at the fork of the Red Fork and the Tumblestone rivers."},
+  {id:"harrenhal",name:"Harrenhal",house:null,x:23.3,y:48.8,desc:"Gigantic cursed ruin on the shore of the Gods Eye, melted by dragonfire during Aegon's Conquest."},
+  {id:"casterly_rock",name:"Casterly Rock",house:"lannister",x:12.1,y:52.9,desc:"Seat of House Lannister, built into a great rock above goldmines of legendary wealth."},
+  {id:"dragonstone",name:"Dragonstone",house:"targaryen",x:33.7,y:51.5,desc:"Island fortress of House Targaryen. Ancient seat of the heir to the Iron Throne. Dragons were born here."},
+  {id:"kingslanding",name:"King's Landing",house:"baratheon",x:25.6,y:55.2,desc:"Capital of the Seven Kingdoms, home of the Iron Throne and the Red Keep."},
+  {id:"highgarden",name:"Highgarden",house:"tyrell",x:14.7,y:69.1,desc:"Seat of House Tyrell in the heart of the Reach, the most fertile lands of Westeros."},
+  {id:"storms_end",name:"Storm's End",house:"baratheon",x:29.5,y:64.1,desc:"Mighty castle of House Baratheon on Shipbreaker Bay, built to face endless storms."},
+  {id:"sunspear",name:"Sunspear",house:"martell",x:31.2,y:77.0,desc:"Sandstone seat of House Martell in the deserts of Dorne, ancient and unbowed."},
+  {id:"pentos",name:"Pentos",house:null,x:35.2,y:56.1,desc:"Free city of Essos where Daenerys Targaryen began her journey to reclaim her birthright."},
+  {id:"dothraki_sea",name:"Dothraki Sea",house:null,x:56.8,y:61.0,desc:"Vast grassland of Essos, crossed by khalasars and feared by the Free Cities."}
 ];
 
 
