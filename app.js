@@ -15,7 +15,9 @@ function navigateTo(pageId) {
     if (allBtn) allBtn.classList.add('active');
   }
 
+  // FIX: Guard against missing overlay to prevent crash
   const overlay = document.getElementById('flipOverlay');
+  if (!overlay) return;
   overlay.classList.add('flipping');
 
   setTimeout(() => {
@@ -61,10 +63,11 @@ function renderMap() {
     pin.className = 'map-pin';
     pin.style.left = loc.x + '%';
     pin.style.top = loc.y + '%';
+    // FIX: Escape loc.name to prevent XSS from data
     pin.innerHTML =
       (h ? '<div class="pin-sigil">' + h.sigil + '</div>' : '') +
       '<div class="pin-dot"></div>' +
-      '<div class="pin-label">' + loc.name + '</div>';
+      '<div class="pin-label">' + escapeHtml(loc.name) + '</div>';
 
     pin.addEventListener('mouseenter', e => {
       tooltip.classList.add('visible');
@@ -89,32 +92,36 @@ function renderMap() {
   Object.entries(HOUSES).forEach(([key, h]) => {
     const item = document.createElement('div');
     item.className = 'legend-item';
-    item.innerHTML = h.sigil + '<span class="legend-text">' + h.name.replace('House ', '') + '</span>';
+    item.innerHTML = h.sigil + '<span class="legend-text">' + escapeHtml(h.name.replace('House ', '')) + '</span>';
     item.addEventListener('click', () => { currentHouse = key; navigateTo('house'); });
     legend.appendChild(item);
   });
 }
 
 // ===== TOUCH PINS =====
+// FIX: Use a flag per-pin to ignore the dismiss fired on the same touch that opened it
 let _touchPinsDismissAttached = false;
+let _suppressDismiss = false;
 
 function enableTouchPins() {
   document.querySelectorAll('.map-pin').forEach(pin => {
     pin.addEventListener('touchstart', e => {
       e.stopPropagation();
       e.preventDefault();
+      _suppressDismiss = true; // suppress the global dismiss for this touch cycle
       document.querySelectorAll('.map-pin.touch-show').forEach(p => {
         if (p !== pin) p.classList.remove('touch-show');
       });
       pin.classList.toggle('touch-show');
+      // Allow dismiss again after this event cycle fully completes
+      requestAnimationFrame(() => { _suppressDismiss = false; });
     }, { passive: false });
   });
 
-  // Only attach the global dismiss listener once — re-attaching every render
-  // caused pins to close immediately on the same touch that opened them.
   if (!_touchPinsDismissAttached) {
     _touchPinsDismissAttached = true;
     document.addEventListener('touchstart', () => {
+      if (_suppressDismiss) return;
       document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
     });
   }
@@ -122,10 +129,16 @@ function enableTouchPins() {
 
 function positionTooltip(e, tooltip, container) {
   const rect = container.getBoundingClientRect();
+  // FIX: Use actual tooltip dimensions instead of hardcoded magic numbers
+  const tw = tooltip.offsetWidth || 280;
+  const th = tooltip.offsetHeight || 160;
   let x = e.clientX - rect.left + 16;
   let y = e.clientY - rect.top + 16;
-  if (x + 280 > rect.width) x = e.clientX - rect.left - 280;
-  if (y + 160 > rect.height) y = e.clientY - rect.top - 160;
+  if (x + tw > rect.width) x = e.clientX - rect.left - tw - 8;
+  if (y + th > rect.height) y = e.clientY - rect.top - th - 8;
+  // FIX: Clamp so tooltip never goes off the left/top edge
+  x = Math.max(0, x);
+  y = Math.max(0, y);
   tooltip.style.left = x + 'px';
   tooltip.style.top = y + 'px';
 }
@@ -167,7 +180,7 @@ function renderHousePage(houseKey) {
     const sl = { alive: 'Living', dead: 'Deceased', unknown: 'Unknown' }[sc] || 'Unknown';
     card.innerHTML =
       '<div class="char-avatar" style="background:none;border:none">' + ch.portrait + '</div>' +
-      '<div class="char-info"><div class="char-name">' + ch.name + '</div><div class="char-role">' + ch.title + '</div></div>' +
+      '<div class="char-info"><div class="char-name">' + escapeHtml(ch.name) + '</div><div class="char-role">' + escapeHtml(ch.title) + '</div></div>' +
       '<div class="char-status ' + sc + '">' + sl + '</div>';
     card.addEventListener('click', () => { currentChar = ck; navigateTo('character'); });
     charList.appendChild(card);
@@ -193,15 +206,15 @@ function renderCharPage(charKey) {
 
   const statusColor = ch.status === 'dead' ? '#5a0a0a' : ch.status === 'alive' ? '#1a4a1a' : '#4a3a0a';
   document.getElementById('charVitals').innerHTML =
-    '<div class="vital-row"><span class="vital-label">House</span><span class="vital-value">' + (h ? h.name : '—') + '</span></div>' +
-    '<div class="vital-row"><span class="vital-label">Region</span><span class="vital-value">' + (h ? h.region : '—') + '</span></div>' +
-    '<div class="vital-row"><span class="vital-label">Seat</span><span class="vital-value">' + (h ? h.seat : '—') + '</span></div>' +
-    '<div class="vital-row"><span class="vital-label">Status</span><span class="vital-value" style="color:' + statusColor + '">' + (ch.status_text || ch.status) + '</span></div>';
+    '<div class="vital-row"><span class="vital-label">House</span><span class="vital-value">' + escapeHtml(h ? h.name : '—') + '</span></div>' +
+    '<div class="vital-row"><span class="vital-label">Region</span><span class="vital-value">' + escapeHtml(h ? h.region : '—') + '</span></div>' +
+    '<div class="vital-row"><span class="vital-label">Seat</span><span class="vital-value">' + escapeHtml(h ? h.seat : '—') + '</span></div>' +
+    '<div class="vital-row"><span class="vital-label">Status</span><span class="vital-value" style="color:' + statusColor + '">' + escapeHtml(ch.status_text || ch.status) + '</span></div>';
 
   document.getElementById('charFullName').textContent = ch.name;
   document.getElementById('charTitleText').textContent = ch.title;
   document.getElementById('charBio').textContent = ch.bio;
-  document.getElementById('charBattles').innerHTML = (ch.battles || []).map(b => '<div class="battle-tag">' + b + '</div>').join('');
+  document.getElementById('charBattles').innerHTML = (ch.battles || []).map(b => '<div class="battle-tag">' + escapeHtml(b) + '</div>').join('');
   document.getElementById('charMoments').textContent = ch.moments;
   document.getElementById('charLineage').textContent = ch.lineage_detail;
 
@@ -211,20 +224,26 @@ function renderCharPage(charKey) {
 }
 
 // ===== SEARCH =====
+// FIX: Debounced search — prevents firing on every single keystroke
+let _searchDebounceTimer = null;
 function doSearch(query) {
-  renderSearch(query);
+  clearTimeout(_searchDebounceTimer);
+  _searchDebounceTimer = setTimeout(() => renderSearch(query), 200);
 }
 
 function setFilter(f, btn) {
   searchFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  doSearch(document.getElementById('searchInput').value);
+  // FIX: Read input value safely
+  const input = document.getElementById('searchInput');
+  doSearch(input ? input.value : '');
 }
 
 function renderSearch(query) {
-  const q = query.toLowerCase();
+  const q = (query || '').toLowerCase().trim();
   const results = document.getElementById('searchResults');
+  if (!results) return;
   results.innerHTML = '';
   const items = [];
 
@@ -243,8 +262,13 @@ function renderSearch(query) {
   if (searchFilter === 'all' || searchFilter === 'location') {
     LOCATIONS.forEach(loc => {
       const h = loc.house ? HOUSES[loc.house] : null;
-      if (!q || loc.name.toLowerCase().includes(q) || loc.desc.toLowerCase().includes(q))
-        items.push({ type: 'location', key: loc.id, display: loc.name, sub: loc.desc.substring(0, 55) + '...', sigil: h ? h.sigil : '🗺' });
+      if (!q || loc.name.toLowerCase().includes(q) || loc.desc.toLowerCase().includes(q)) {
+        // FIX: Smart truncation — don't cut mid-word
+        const sub = loc.desc.length > 58
+          ? loc.desc.substring(0, loc.desc.lastIndexOf(' ', 58)) + '…'
+          : loc.desc;
+        items.push({ type: 'location', key: loc.id, display: loc.name, sub, sigil: h ? h.sigil : '🗺' });
+      }
     });
   }
 
@@ -253,6 +277,8 @@ function renderSearch(query) {
     return;
   }
 
+  // FIX: Use a DocumentFragment to batch DOM insertions — better performance
+  const fragment = document.createDocumentFragment();
   items.forEach(item => {
     const card = document.createElement('div');
     card.className = 'result-card';
@@ -260,11 +286,11 @@ function renderSearch(query) {
       '<div class="result-card-top">' +
         '<div class="result-card-text">' +
           '<div class="result-type">' + item.type + '</div>' +
-          '<div class="result-name">' + item.display + '</div>' +
+          '<div class="result-name">' + escapeHtml(item.display) + '</div>' +
         '</div>' +
         '<div class="result-sigil">' + item.sigil + '</div>' +
       '</div>' +
-      '<div class="result-sub">' + item.sub + '</div>';
+      '<div class="result-sub">' + escapeHtml(item.sub) + '</div>';
     card.addEventListener('click', () => {
       if (item.type === 'house') { currentHouse = item.key; navigateTo('house'); }
       else if (item.type === 'character') { currentChar = item.key; navigateTo('character'); }
@@ -274,8 +300,9 @@ function renderSearch(query) {
         else navigateTo('map');
       }
     });
-    results.appendChild(card);
+    fragment.appendChild(card);
   });
+  results.appendChild(fragment);
 }
 
 // ===== MAP ZOOM/PAN =====
@@ -309,18 +336,35 @@ function renderTimeline() {
     return;
   }
 
+  const fragment = document.createDocumentFragment();
   [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year).forEach((ev, i, arr) => {
     const item = document.createElement('div');
     item.className = 'timeline-item';
-    item.innerHTML = `
-      <div class="timeline-dot"></div>
-      ${i < arr.length - 1 ? '<div class="timeline-line"></div>' : ''}
-      <div class="timeline-year">${ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + ' AC'}</div>
-      <div class="timeline-title">${ev.title}</div>
-      <div class="timeline-desc">${ev.desc}</div>
-    `;
-    list.appendChild(item);
+    // FIX: Use textContent for user-data fields to prevent XSS
+    const dot = document.createElement('div');
+    dot.className = 'timeline-dot';
+    const year = document.createElement('div');
+    year.className = 'timeline-year';
+    year.textContent = ev.year < 0 ? Math.abs(ev.year) + ' BC' : ev.year + ' AC';
+    const title = document.createElement('div');
+    title.className = 'timeline-title';
+    title.textContent = ev.title;
+    const desc = document.createElement('div');
+    desc.className = 'timeline-desc';
+    desc.textContent = ev.desc;
+
+    item.appendChild(dot);
+    if (i < arr.length - 1) {
+      const line = document.createElement('div');
+      line.className = 'timeline-line';
+      item.appendChild(line);
+    }
+    item.appendChild(year);
+    item.appendChild(title);
+    item.appendChild(desc);
+    fragment.appendChild(item);
   });
+  list.appendChild(fragment);
 }
 
 // ===== LEGEND DROPDOWN =====
@@ -347,17 +391,23 @@ function enableMapDrag() {
 
   let dragging = false;
   let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  // FIX: Track if drag actually moved, so a tap on the map doesn't count as a drag
+  let hasMoved = false;
 
   function startDrag(x, y) {
     dragging = true;
+    hasMoved = false;
     startX = x; startY = y;
     startPanX = mapPanX; startPanY = mapPanY;
     document.body.style.cursor = 'grabbing';
   }
   function moveDrag(x, y) {
     if (!dragging) return;
-    mapPanX = startPanX + (x - startX);
-    mapPanY = startPanY + (y - startY);
+    const dx = x - startX;
+    const dy = y - startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+    mapPanX = startPanX + dx;
+    mapPanY = startPanY + dy;
     applyMapZoom();
   }
   function endDrag() {
@@ -373,17 +423,52 @@ function enableMapDrag() {
   document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
   document.addEventListener('mouseup', endDrag);
 
-  // Touch drag
+  // FIX: Pinch-to-zoom support on mobile
+  let _lastPinchDist = null;
   stage.addEventListener('touchstart', e => {
     if (e.target.closest('.map-pin')) return;
-    if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    if (e.touches.length === 1) {
+      startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (e.touches.length === 2) {
+      dragging = false;
+      _lastPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
   }, { passive: true });
+
   stage.addEventListener('touchmove', e => {
     if (e.touches.length === 1) {
       moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (e.touches.length === 2 && _lastPinchDist !== null) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const delta = (dist - _lastPinchDist) * 0.005;
+      mapZoom = Math.min(2.5, Math.max(0.6, mapZoom + delta));
+      _lastPinchDist = dist;
+      applyMapZoom();
     }
   }, { passive: true });
-  stage.addEventListener('touchend', endDrag);
+
+  stage.addEventListener('touchend', e => {
+    if (e.touches.length < 2) _lastPinchDist = null;
+    endDrag();
+  });
+}
+
+// ===== UTILITY =====
+// FIX: Helper to safely escape strings before injecting into innerHTML
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 // ===== INIT — run once after DOM ready =====
