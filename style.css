@@ -2060,3 +2060,90 @@ button:focus-visible,
   }
 }
 
+/* ============================================================
+   MOBILE FIX PATCH — timeline grid + house book layout
+   ============================================================ */
+@media (max-width: 768px) {
+
+  /* ---------- House book ---------- */
+  .book-spine {            /* hide faux spine on phones   */
+    display: none !important;
+  }
+  .book-wrapper {          /* let the book fill the width */
+    width: 95vw !important;
+    height: auto !important;
+    perspective: none !important;
+  }
+  .book {
+    display: flex !important;          /* turn pages into a column   */
+    flex-direction: column !important;
+    width: 100% !important;
+    height: auto !important;
+    transform: none !important;
+    animation: none !important;
+  }
+  /* first page (sigil + motto) */
+  .book-page.left {
+    position: relative !important;
+    width: 100% !important;
+    border-radius: 8px 8px 0 0 !important;
+    box-shadow: none !important;
+    overflow: visible !important;
+    padding: 20px 16px !important;
+  }
+  /* second page (members list) */
+  .book-page.right {
+    position: relative !important;
+    width: 100% !important;
+    border-radius: 0 0 8px 8px !important;
+    padding: 20px 16px !important;
+    overflow-y: auto !important;
+    max-height: 52vh !important;       /* leave room for header/nav */
+  }
+
+  /* compact emblem row */
+  .house-emblem-area {
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 12px !important;
+    padding: 8px 0 !important;
+  }
+
+  /* ---------- Timeline ---------- */
+  /* shrink header space that pushes content too low */
+  #page-timeline::before,
+  #page-timeline::after {              /* vignette overlays          */
+    inset: 100px 0 0 !important;
+  }
+  #page-timeline .timeline-scroll {
+    padding: 14px 12px 100px !important;
+    max-width: 100% !important;
+  }
+  /* switch to a 2-column CSS grid instead of 3-col float math */
+  #page-timeline .timeline-item {
+    display: grid !important;
+    grid-template-columns: 28px minmax(0,1fr) !important; /* rail + card */
+    grid-template-rows: auto auto !important;
+    column-gap: 10px !important;
+    row-gap: 0 !important;
+    padding: 0 0 16px !important;
+  }
+  .timeline-dateplate {                /* moves date above card      */
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    margin-bottom: 6px !important;
+    font-size: .52rem !important;
+    max-width: calc(100vw - 70px) !important;
+  }
+  .timeline-rail  { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
+  .timeline-card  { grid-column: 2 !important; grid-row: 2 !important; }
+  /* era-marker pill: center & hide extender lines */
+  .timeline-era-marker {
+    justify-content: center !important;
+    margin: 18px 0 10px !important;
+  }
+  .timeline-era-marker::before,
+  .timeline-era-marker::after { display: none !important; }
+}
+/* ===== END MOBILE FIX PATCH ===== */
