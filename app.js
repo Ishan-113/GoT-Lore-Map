@@ -47,10 +47,10 @@ function navigateTo(pageId) {
 
 // ===== MAP =====
 function renderMap() {
-  applyMapZoom();
   const container = document.getElementById('mapPins');
   if (!container) return;
   container.innerHTML = '';
+  applyMapZoom();
   const tooltip = document.getElementById('mapTooltip');
   const mapEl = document.getElementById('mapContainer');
   if (!tooltip || !mapEl) return;
@@ -96,6 +96,8 @@ function renderMap() {
 }
 
 // ===== TOUCH PINS =====
+let _touchPinsDismissAttached = false;
+
 function enableTouchPins() {
   document.querySelectorAll('.map-pin').forEach(pin => {
     pin.addEventListener('touchstart', e => {
@@ -107,9 +109,15 @@ function enableTouchPins() {
       pin.classList.toggle('touch-show');
     }, { passive: false });
   });
-  document.addEventListener('touchstart', () => {
-    document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
-  });
+
+  // Only attach the global dismiss listener once — re-attaching every render
+  // caused pins to close immediately on the same touch that opened them.
+  if (!_touchPinsDismissAttached) {
+    _touchPinsDismissAttached = true;
+    document.addEventListener('touchstart', () => {
+      document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
+    });
+  }
 }
 
 function positionTooltip(e, tooltip, container) {
@@ -331,9 +339,11 @@ function enableLegendDropdown() {
 }
 
 // ===== DRAG TO PAN MAP (mouse + touch) =====
+let _mapDragEnabled = false;
 function enableMapDrag() {
   const stage = document.getElementById('mapStage');
-  if (!stage) return;
+  if (!stage || _mapDragEnabled) return;
+  _mapDragEnabled = true;
 
   let dragging = false;
   let startX = 0, startY = 0, startPanX = 0, startPanY = 0;

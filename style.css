@@ -377,6 +377,18 @@ body{font-family:'IM Fell English SC',serif}
 
 .inner-disclaimer{display:none}
 
+/* touch-show: mobile tap to reveal pin label/tooltip */
+.map-pin.touch-show .pin-label{
+  background:rgba(0,0,0,.75);
+  color:#fff;
+  padding:2px 8px;
+  font-size:.62rem;
+}
+.map-pin.touch-show .pin-dot{
+  transform:scale(1.7);
+  box-shadow:0 0 22px rgba(201,168,76,1);
+}
+
 /* ===== FINAL MAP / PAN LAYER ===== */
 /* Keeps map transform-based zoom/drag stable and keeps controls floating */
 .map-container{
@@ -386,8 +398,8 @@ body{font-family:'IM Fell English SC',serif}
   overflow:hidden !important;
   background:#050208;
   cursor:grab;
-  display:block !important;
-  padding:0 !important;
+  /* removed display:block !important — it was overriding the page flex layout
+     and causing the container to collapse on some browsers */
 }
 
 .map-container.dragging{
