@@ -23,6 +23,7 @@ function navigateTo(pageId) {
   setTimeout(() => {
     document.querySelectorAll('.page').forEach(p => {
       p.classList.remove('active');
+      p.classList.remove('page-visible');
       p.style.display = 'none';
       p.style.opacity = '0';
     });
@@ -32,6 +33,7 @@ function navigateTo(pageId) {
       requestAnimationFrame(() => {
         target.style.opacity = '1';
         target.classList.add('active');
+        target.classList.add('page-visible');
       });
     }
     if (pageId === 'house' && currentHouse) renderHousePage(currentHouse);
@@ -57,12 +59,13 @@ function renderMap() {
   const mapEl = document.getElementById('mapContainer');
   if (!tooltip || !mapEl) return;
 
-  LOCATIONS.forEach(loc => {
+  LOCATIONS.forEach((loc, i) => {
     const h = loc.house ? HOUSES[loc.house] : null;
     const pin = document.createElement('div');
     pin.className = 'map-pin';
     pin.style.left = loc.x + '%';
     pin.style.top = loc.y + '%';
+    pin.style.setProperty('--pin-index', i);
     // FIX: Escape loc.name to prevent XSS from data
     pin.innerHTML =
       (h ? '<div class="pin-sigil">' + h.sigil + '</div>' : '') +
@@ -171,11 +174,12 @@ function renderHousePage(houseKey) {
 
   const charList = document.getElementById('charList');
   charList.innerHTML = '';
-  (h.characters || []).forEach(ck => {
+  (h.characters || []).forEach((ck, i) => {
     const ch = CHARACTERS[ck];
     if (!ch) return;
     const card = document.createElement('div');
     card.className = 'char-card';
+    card.style.setProperty('--item-index', i);
     const sc = ch.status || 'unknown';
     const sl = { alive: 'Living', dead: 'Deceased', unknown: 'Unknown' }[sc] || 'Unknown';
     card.innerHTML =
@@ -279,9 +283,10 @@ function renderSearch(query) {
 
   // FIX: Use a DocumentFragment to batch DOM insertions — better performance
   const fragment = document.createDocumentFragment();
-  items.forEach(item => {
+  items.forEach((item, i) => {
     const card = document.createElement('div');
     card.className = 'result-card';
+    card.style.setProperty('--item-index', Math.min(i, 18));
     card.innerHTML =
       '<div class="result-card-top">' +
         '<div class="result-card-text">' +
@@ -340,6 +345,7 @@ function renderTimeline() {
   [...TIMELINE_EVENTS].sort((a, b) => a.year - b.year).forEach((ev, i, arr) => {
     const item = document.createElement('div');
     item.className = 'timeline-item';
+    item.style.setProperty('--item-index', i);
     // FIX: Use textContent for user-data fields to prevent XSS
     const dot = document.createElement('div');
     dot.className = 'timeline-dot';
@@ -459,6 +465,28 @@ function enableMapDrag() {
   });
 }
 
+// ===== AMBIENT UI MOTION =====
+function enableHomeParallax() {
+  const home = document.getElementById('page-home');
+  if (!home || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  let ticking = false;
+  let nextX = 0;
+  let nextY = 0;
+
+  window.addEventListener('pointermove', e => {
+    nextX = (0.5 - e.clientX / window.innerWidth) * 18;
+    nextY = (0.5 - e.clientY / window.innerHeight) * 12;
+    if (ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => {
+      home.style.setProperty('--home-shift-x', nextX.toFixed(2) + 'px');
+      home.style.setProperty('--home-shift-y', nextY.toFixed(2) + 'px');
+      ticking = false;
+    });
+  }, { passive: true });
+}
+
 // ===== UTILITY =====
 // FIX: Helper to safely escape strings before injecting into innerHTML
 function escapeHtml(str) {
@@ -476,4 +504,5 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMap();
   enableLegendDropdown();
   enableMapDrag();
+  enableHomeParallax();
 });
