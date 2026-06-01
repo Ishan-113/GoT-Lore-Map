@@ -4,6 +4,8 @@ let searchFilter = 'all';
 let mapZoom = 1;
 let mapPanX = 0;
 let mapPanY = 0;
+const PAGE_TRANSITION_SWAP_MS = 320;
+const PAGE_TRANSITION_TOTAL_MS = 760;
 
 // ===== NAVIGATION =====
 function navigateTo(pageId) {
@@ -15,9 +17,10 @@ function navigateTo(pageId) {
     if (allBtn) allBtn.classList.add('active');
   }
 
-  // FIX: Guard against missing overlay to prevent crash
   const overlay = document.getElementById('flipOverlay');
   if (!overlay) return;
+  overlay.classList.remove('flipping');
+  void overlay.offsetWidth;
   overlay.classList.add('flipping');
 
   setTimeout(() => {
@@ -45,8 +48,8 @@ function navigateTo(pageId) {
       if (si) si.value = '';
     }
 
-    setTimeout(() => overlay.classList.remove('flipping'), 100);
-  }, 280);
+    setTimeout(() => overlay.classList.remove('flipping'), PAGE_TRANSITION_TOTAL_MS - PAGE_TRANSITION_SWAP_MS);
+  }, PAGE_TRANSITION_SWAP_MS);
 }
 
 // ===== MAP =====

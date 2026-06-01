@@ -316,40 +316,97 @@ body{font-family:'IM Fell English SC',serif}
 .result-sub{font-family:'IM Fell English',serif;font-style:italic;font-size:.75rem;color:var(--text-parchment);opacity:.7;line-height:1.4;margin-top:4px;white-space:normal}
 .result-sigil{font-size:30px;line-height:1;flex-shrink:0}
 
-/* ===== PAGE TRANSITION — cinematic vignette fade ===== */
+/* ===== PAGE TRANSITION - parchment turn ===== */
 .page-flip-overlay{
-  position:fixed;inset:0;z-index:1000;pointer-events:none;
-  /* layered: dark vignette centre + golden ember burst */
-  background:
-    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,.18) 0%, transparent 70%),
-    radial-gradient(ellipse 100% 100% at 50% 50%, #0a0500 0%, #0a0500 100%);
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  pointer-events:none;
+  overflow:hidden;
   opacity:0;
+  clip-path:polygon(0 0,0 0,0 100%,0 100%);
+  background:
+    radial-gradient(ellipse at 50% 48%,rgba(245,210,139,.18),transparent 48%),
+    linear-gradient(90deg,rgba(4,2,0,0),rgba(4,2,0,.94) 27%,rgba(184,128,67,.72) 50%,rgba(4,2,0,.94) 73%,rgba(4,2,0,0));
+  transform:translateZ(0);
 }
-.page-flip-overlay.flipping{
-  animation:pageFade 0.55s cubic-bezier(.4,0,.2,1) forwards;
-}
-@keyframes pageFade{
-  0%  {opacity:0}
-  38% {opacity:1}
-  62% {opacity:1}
-  100%{opacity:0}
-}
-/* candle-flicker shimmer on top of the dark cover */
+
+.page-flip-overlay::before,
 .page-flip-overlay::after{
   content:'';
-  position:absolute;inset:0;
-  background:radial-gradient(ellipse 55% 40% at 50% 50%,
-    rgba(201,168,76,.22) 0%,
-    rgba(139,90,43,.10) 40%,
-    transparent 72%);
-  animation:flickerPulse 0.55s ease-in-out forwards;
+  position:absolute;
+  pointer-events:none;
   opacity:0;
 }
-@keyframes flickerPulse{
-  0%  {opacity:0;transform:scale(.9)}
-  40% {opacity:1;transform:scale(1.04)}
-  60% {opacity:.9;transform:scale(1)}
-  100%{opacity:0;transform:scale(1.08)}
+
+.page-flip-overlay::before{
+  inset:-6%;
+  background:
+    repeating-linear-gradient(93deg,transparent 0 24px,rgba(85,38,10,.10) 25px 26px),
+    radial-gradient(ellipse at 50% 50%,rgba(242,213,162,.78),rgba(174,117,59,.52) 42%,rgba(26,10,0,.82) 75%,rgba(3,1,0,.96) 100%);
+  filter:sepia(.35) contrast(1.08);
+  transform:scaleX(.35);
+  transform-origin:left center;
+}
+
+.page-flip-overlay::after{
+  top:-10%;
+  bottom:-10%;
+  left:-18vw;
+  width:16vw;
+  min-width:96px;
+  background:linear-gradient(90deg,transparent,rgba(255,240,180,.16),rgba(255,219,124,.75),rgba(255,240,180,.18),transparent);
+  transform:skewX(-10deg);
+}
+
+.page-flip-overlay.flipping{
+  animation:realmPageTurn .76s cubic-bezier(.65,0,.2,1) forwards;
+}
+
+.page-flip-overlay.flipping::before{
+  animation:parchmentFace .76s cubic-bezier(.65,0,.2,1) forwards;
+}
+
+.page-flip-overlay.flipping::after{
+  animation:pageGleam .76s cubic-bezier(.65,0,.2,1) forwards;
+}
+
+@keyframes realmPageTurn{
+  0%{opacity:0;clip-path:polygon(0 0,0 0,0 100%,0 100%)}
+  16%{opacity:1;clip-path:polygon(0 0,34% 0,28% 100%,0 100%)}
+  42%{opacity:1;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  66%{opacity:1;clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+  100%{opacity:0;clip-path:polygon(100% 0,100% 0,100% 100%,100% 100%)}
+}
+
+@keyframes parchmentFace{
+  0%{opacity:0;transform:translateX(-24%) scaleX(.35)}
+  30%{opacity:.9;transform:translateX(0) scaleX(1)}
+  64%{opacity:.82;transform:translateX(0) scaleX(1)}
+  100%{opacity:0;transform:translateX(24%) scaleX(.45)}
+}
+
+@keyframes pageGleam{
+  0%{opacity:0;left:-18vw}
+  18%{opacity:1}
+  70%{opacity:.9}
+  100%{opacity:0;left:102vw}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .page-flip-overlay.flipping{
+    animation:transitionReducedFade .36s ease forwards;
+  }
+
+  .page-flip-overlay.flipping::before,
+  .page-flip-overlay.flipping::after{
+    animation:none;
+  }
+
+  @keyframes transitionReducedFade{
+    0%,100%{opacity:0}
+    45%,65%{opacity:1}
+  }
 }
 
 
@@ -1918,232 +1975,570 @@ button:focus-visible,
 .map-pin.touch-show .pin-label{
   transform:translate(-50%,0);
 }
-/* ============================================================
-   MOBILE FIX PATCH 2 — timeline grid + book spine + transition
-   ============================================================ */
-
-@media (max-width: 768px) {
-
-  /* --- House book: hide spine, fix page sizing --- */
-  .book-spine {
-    display: none !important;
+/* ===== RESPONSIVE CONSOLIDATION ===== */
+@media (max-width:768px){
+  html,
+  body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
   }
 
-  .book-wrapper {
-    width: 95vw !important;
-    height: auto !important;
-    min-height: 0 !important;
-    perspective: none !important;
+  .page{
+    position:fixed;
+    inset:0;
+    min-height:100vh;
+    overflow:hidden;
   }
 
-  .book {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 100% !important;
-    height: auto !important;
-    transform: none !important;
-    animation: none !important;
-    opacity: 1 !important;
-    transform-style: flat !important;
+  .page.active{
+    display:flex;
   }
 
-  /* Both pages: full width, relative positioned */
-  .book-page {
-    position: relative !important;
-    left: auto !important;
-    right: auto !important;
-    top: auto !important;
-    bottom: auto !important;
-    width: 100% !important;
-    height: auto !important;
-    min-height: 200px !important;
-    background-size: cover !important;
-    background-position: center !important;
-    overflow: visible !important;
-    padding: 20px 16px !important;
+  .map-header,
+  .search-header-bar,
+  .char-header{
+    height:auto !important;
+    min-height:78px !important;
+    padding:8px 12px !important;
+    flex-wrap:wrap !important;
+    align-items:center !important;
+    gap:8px !important;
   }
 
-  .book-page.left {
-    border-radius: 8px 8px 0 0 !important;
-    box-shadow: none !important;
+  .map-header > div:first-child,
+  .search-header-bar > div:first-child{
+    min-width:0;
+    flex:1 1 auto;
   }
 
-  .book-page.right {
-    border-radius: 0 0 8px 8px !important;
-    overflow-y: auto !important;
-    max-height: 52vh !important;
+  .map-header-title,
+  .char-breadcrumb-current{
+    font-size:.82rem !important;
+    line-height:1.25;
   }
 
-  /* Compact house emblem row */
-  .house-emblem-area {
-    flex-direction: row !important;
-    align-items: center !important;
-    justify-content: center !important;
-    flex-wrap: wrap !important;
-    gap: 12px !important;
-    padding: 8px 0 !important;
+  .nav-tabs{
+    width:100% !important;
+    justify-content:center !important;
+    flex-wrap:wrap !important;
+    gap:6px !important;
   }
 
-  .house-sigil-large { font-size: 48px !important; }
-  .house-name-book { font-size: 1.15rem !important; }
-  .house-words { font-size: .82rem !important; }
-  .house-region { font-size: .6rem !important; }
-
-  /* Char cards inside book: keep row layout */
-  .char-card {
-    flex-direction: row !important;
-    text-align: left !important;
+  .nav-tab{
+    min-height:32px;
+    padding:6px 10px !important;
+    font-size:.58rem !important;
   }
 
-  /* --- Timeline: header is ~100px tall on mobile --- */
+  .back-btn-sm{
+    min-height:32px;
+    padding:6px 10px !important;
+    font-size:.58rem !important;
+  }
+
+  .map-container{
+    height:calc(100vh - 166px) !important;
+    min-height:0;
+    padding:0 0 calc(96px + env(safe-area-inset-bottom)) !important;
+    touch-action:none;
+  }
+
+  .map-stage{
+    left:79% !important;
+    top:50% !important;
+    width:min(190vw,940px) !important;
+    max-width:none !important;
+  }
+
+  .map-img{
+    width:100% !important;
+  }
+
+  .map-legend{
+    top:132px !important;
+    left:10px !important;
+    width:min(210px,calc(100vw - 20px)) !important;
+    max-height:42vh;
+    overflow:hidden;
+  }
+
+  #legendItems{
+    max-height:calc(42vh - 54px);
+    overflow-y:auto;
+  }
+
+  .map-controls{
+    top:132px !important;
+    right:10px !important;
+    gap:6px !important;
+  }
+
+  .map-controls button{
+    width:34px !important;
+    height:34px !important;
+  }
+
+  .map-controls button:last-child{
+    width:auto !important;
+    min-width:58px !important;
+    padding-inline:10px !important;
+  }
+
+  .pin-label{
+    max-width:84px;
+    font-size:.48rem !important;
+    white-space:normal;
+    text-align:center;
+    line-height:1.15;
+  }
+
+  .pin-sigil,
+  .pin-sigil svg,
+  .pin-sigil img{
+    width:18px !important;
+    height:18px !important;
+  }
+
+  .pin-dot{
+    width:8px !important;
+    height:8px !important;
+  }
+
+  .map-tooltip{
+    width:min(230px,calc(100vw - 28px)) !important;
+    max-width:min(230px,calc(100vw - 28px)) !important;
+    font-size:.75rem !important;
+  }
+
+  #page-search{
+    width:100vw !important;
+    overflow:hidden !important;
+  }
+
+  .search-header-bar,
+  .search-filters,
+  .search-results{
+    width:100vw !important;
+    max-width:100vw !important;
+    box-sizing:border-box !important;
+  }
+
+  .search-input-wrap{
+    order:3 !important;
+    width:calc(100vw - 20px) !important;
+    max-width:calc(100vw - 20px) !important;
+    flex:1 0 100% !important;
+    margin:0 auto !important;
+  }
+
+  .search-input{
+    display:block !important;
+    width:100% !important;
+    opacity:1 !important;
+    visibility:visible !important;
+    color:var(--gold-light) !important;
+    font-size:.75rem !important;
+  }
+
+  .search-filters{
+    height:auto !important;
+    min-height:auto !important;
+    padding:8px 10px !important;
+    flex-wrap:wrap !important;
+    gap:8px !important;
+    overflow-x:hidden !important;
+  }
+
+  .filter-label{
+    width:100% !important;
+    margin-left:0 !important;
+    padding-left:0 !important;
+  }
+
+  .filter-btn{
+    flex:1 1 auto !important;
+    min-width:0 !important;
+    min-height:32px;
+    padding:7px 10px !important;
+    font-size:.56rem !important;
+  }
+
+  .search-results{
+    grid-template-columns:1fr !important;
+    padding:16px 10px calc(112px + env(safe-area-inset-bottom)) !important;
+    overflow-x:hidden !important;
+  }
+
+  .result-card{
+    width:100% !important;
+    max-width:100% !important;
+    min-height:116px !important;
+  }
+
+  #page-house{
+    justify-content:flex-start !important;
+    height:100vh !important;
+    overflow-y:auto !important;
+    padding:14px 0 calc(112px + env(safe-area-inset-bottom)) !important;
+    box-sizing:border-box;
+  }
+
+  .book-wrapper{
+    width:min(95vw,540px) !important;
+    height:max-content !important;
+    min-height:max-content !important;
+    perspective:none !important;
+  }
+
+  .book{
+    display:flex !important;
+    flex-direction:column !important;
+    width:100% !important;
+    height:auto !important;
+    transform:none !important;
+    transform-style:flat !important;
+    animation:none !important;
+    opacity:1 !important;
+  }
+
+  .book-spine{
+    display:none !important;
+  }
+
+  .book-page{
+    position:relative !important;
+    inset:auto !important;
+    width:100% !important;
+    min-height:0 !important;
+    height:auto !important;
+    padding:20px 16px !important;
+    overflow:visible !important;
+    background-size:cover !important;
+    box-sizing:border-box !important;
+  }
+
+  .book-page.left{
+    border-radius:8px 8px 0 0 !important;
+    box-shadow:inset 0 -14px 24px rgba(60,24,4,.12),0 14px 26px rgba(0,0,0,.18) !important;
+  }
+
+  .book-page.right{
+    max-height:none !important;
+    border-radius:0 0 8px 8px !important;
+    overflow:visible !important;
+    box-shadow:inset 0 14px 24px rgba(60,24,4,.12),0 14px 26px rgba(0,0,0,.18) !important;
+  }
+
+  .page-lines{
+    display:none !important;
+  }
+
+  .house-emblem-area{
+    flex-direction:row !important;
+    align-items:center !important;
+    justify-content:center !important;
+    flex-wrap:wrap !important;
+    gap:12px !important;
+    padding:8px 0 !important;
+  }
+
+  #houseSigilLarge .sigil-img,
+  .house-sigil-large svg{
+    width:76px !important;
+    height:76px !important;
+  }
+
+  .house-name-book{
+    font-size:1.2rem !important;
+    line-height:1.2 !important;
+  }
+
+  .house-words{
+    font-size:.84rem !important;
+  }
+
+  .house-region{
+    font-size:.6rem !important;
+  }
+
+  .members-title{
+    margin-top:4px !important;
+  }
+
+  .char-card{
+    flex-direction:row !important;
+    align-items:center !important;
+    text-align:left !important;
+  }
+
+  .house-nav{
+    width:min(95vw,540px);
+    margin:12px auto 0 !important;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:8px !important;
+  }
+
+  .house-nav-btn{
+    flex:1 1 130px;
+    min-height:34px;
+    padding:8px 10px !important;
+    font-size:.56rem !important;
+  }
+
+  #page-character{
+    overflow-y:auto !important;
+  }
+
+  .char-header{
+    justify-content:flex-start !important;
+  }
+
+  .char-scroll{
+    flex:0 0 auto !important;
+    flex-direction:column !important;
+    overflow:visible !important;
+    min-height:0 !important;
+    padding-bottom:calc(108px + env(safe-area-inset-bottom));
+  }
+
+  .char-left-panel{
+    width:100% !important;
+    min-width:0 !important;
+    flex-direction:row !important;
+    flex-wrap:wrap !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:12px !important;
+    padding:18px 14px !important;
+    border-right:0 !important;
+    border-bottom:3px solid #6b3015 !important;
+    box-sizing:border-box !important;
+  }
+
+  .char-portrait-frame{
+    width:118px !important;
+    height:132px !important;
+    flex:0 0 auto;
+  }
+
+  .char-house-badge,
+  .char-vitals{
+    flex:1 1 170px;
+    max-width:280px;
+  }
+
+  .char-right-panel{
+    flex:0 0 auto !important;
+    overflow:visible !important;
+    padding:22px 16px 0 !important;
+    box-sizing:border-box !important;
+  }
+
+  .char-full-name{
+    font-size:1.45rem !important;
+    word-break:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .content-section{
+    padding:14px !important;
+  }
+
   #page-timeline::before,
-  #page-timeline::after {
-    inset: 100px 0 0 !important;
+  #page-timeline::after{
+    inset:88px 0 0 !important;
   }
 
-  #page-timeline .timeline-scroll {
-    padding: 14px 12px 100px !important;
-    width: 100% !important;
-    max-width: 100% !important;
+  #page-timeline .timeline-scroll{
+    width:100% !important;
+    max-width:100% !important;
+    padding:16px 12px calc(116px + env(safe-area-inset-bottom)) !important;
+    gap:0 !important;
   }
 
-  /* 2-column grid: [28px rail] [content] */
-  #page-timeline .timeline-item {
-    grid-template-columns: 28px minmax(0, 1fr) !important;
-    grid-template-rows: auto auto !important;
-    column-gap: 10px !important;
-    row-gap: 0 !important;
-    min-height: 0 !important;
-    padding: 0 0 16px !important;
+  .timeline-intro{
+    padding:16px 14px !important;
+    margin-bottom:18px !important;
+    border-radius:8px !important;
   }
 
-  .timeline-dateplate {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    justify-self: start !important;
-    margin-bottom: 6px !important;
-    min-width: 0 !important;
-    max-width: calc(100vw - 70px) !important;
-    font-size: .52rem !important;
-    padding: 5px 8px !important;
+  .timeline-intro-title{
+    font-size:1.08rem !important;
   }
 
-  .timeline-rail {
-    grid-column: 1 !important;
-    grid-row: 1 / span 2 !important;
+  .timeline-intro-copy{
+    margin-top:8px !important;
+    font-size:.84rem !important;
   }
 
-  .timeline-card {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
+  .timeline-kicker{
+    font-size:.54rem !important;
+    letter-spacing:.22em !important;
   }
 
-  /* Era markers: centred pill, no pseudo-lines */
-  .timeline-era-marker {
-    justify-content: center !important;
-    gap: 0 !important;
-    margin: 18px 0 10px !important;
+  .timeline-era-marker{
+    justify-content:center !important;
+    gap:0 !important;
+    margin:20px 0 12px !important;
   }
 
   .timeline-era-marker::before,
-  .timeline-era-marker::after {
-    display: none !important;
+  .timeline-era-marker::after{
+    display:none !important;
   }
 
-  .timeline-era-marker span {
-    max-width: 88vw !important;
-    white-space: normal !important;
-    text-align: center !important;
-    line-height: 1.4 !important;
-    font-size: .58rem !important;
-    letter-spacing: .14em !important;
+  .timeline-era-marker span{
+    max-width:90vw !important;
+    white-space:normal !important;
+    text-align:center !important;
+    line-height:1.4 !important;
+    letter-spacing:.16em !important;
+    font-size:.58rem !important;
+    padding:6px 14px !important;
+  }
+
+  #page-timeline .timeline-item{
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:stretch !important;
+    gap:6px !important;
+    position:relative !important;
+    height:auto !important;
+    min-height:390px !important;
+    padding:0 0 22px 38px !important;
+  }
+
+  .timeline-dateplate{
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    min-width:0 !important;
+    max-width:100% !important;
+    align-self:flex-start !important;
+    margin-bottom:0 !important;
+    padding:5px 9px !important;
+    border-radius:5px !important;
+    font-size:.52rem !important;
+    letter-spacing:.1em !important;
+  }
+
+  .timeline-rail{
+    position:absolute !important;
+    left:0 !important;
+    top:0 !important;
+    bottom:0 !important;
+    width:28px !important;
+    justify-content:center !important;
+  }
+
+  .timeline-card{
+    display:block !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    min-height:max-content !important;
+    overflow:visible !important;
+    padding:13px 12px !important;
+    border-radius:7px !important;
+  }
+
+  .timeline-card-top{
+    flex-direction:column !important;
+    align-items:flex-start !important;
+    gap:7px !important;
+    margin-bottom:8px !important;
+  }
+
+  .timeline-meta{
+    gap:5px !important;
+  }
+
+  .timeline-chip{
+    min-height:20px;
+    padding:3px 7px !important;
+    font-size:.5rem !important;
+  }
+
+  .timeline-sigils{
+    justify-content:flex-start !important;
+    max-width:none !important;
+    gap:4px !important;
+  }
+
+  .timeline-sigil{
+    width:26px !important;
+    height:26px !important;
+  }
+
+  #page-timeline .timeline-title{
+    font-size:.95rem !important;
+  }
+
+  #page-timeline .timeline-desc{
+    font-size:.82rem !important;
+    line-height:1.6 !important;
+  }
+
+  .timeline-consequence{
+    margin-top:10px !important;
+    padding:9px 10px !important;
+    font-size:.78rem !important;
+  }
+
+  #page-timeline .timeline-dot{
+    top:6px !important;
+    width:14px !important;
+    height:14px !important;
+  }
+
+  #page-timeline .timeline-line{
+    top:22px !important;
+    bottom:-18px !important;
+    width:1px !important;
+  }
+
+  .disclaimer-bar{
+    align-items:flex-start !important;
+    gap:8px !important;
+    padding:7px 8px calc(7px + env(safe-area-inset-bottom)) !important;
+    font-size:.58rem !important;
+    line-height:1.35 !important;
+  }
+
+  .disclaimer-text{
+    min-width:0;
+  }
+
+  .disclaimer-close{
+    min-width:74px !important;
+    min-height:32px;
+    padding:6px 8px !important;
+    font-size:.62rem !important;
   }
 }
 
-/* ============================================================
-   MOBILE FIX PATCH — timeline grid + house book layout
-   ============================================================ */
-@media (max-width: 768px) {
-
-  /* ---------- House book ---------- */
-  .book-spine {            /* hide faux spine on phones   */
-    display: none !important;
-  }
-  .book-wrapper {          /* let the book fill the width */
-    width: 95vw !important;
-    height: auto !important;
-    perspective: none !important;
-  }
-  .book {
-    display: flex !important;          /* turn pages into a column   */
-    flex-direction: column !important;
-    width: 100% !important;
-    height: auto !important;
-    transform: none !important;
-    animation: none !important;
-  }
-  /* first page (sigil + motto) */
-  .book-page.left {
-    position: relative !important;
-    width: 100% !important;
-    border-radius: 8px 8px 0 0 !important;
-    box-shadow: none !important;
-    overflow: visible !important;
-    padding: 20px 16px !important;
-  }
-  /* second page (members list) */
-  .book-page.right {
-    position: relative !important;
-    width: 100% !important;
-    border-radius: 0 0 8px 8px !important;
-    padding: 20px 16px !important;
-    overflow-y: auto !important;
-    max-height: 52vh !important;       /* leave room for header/nav */
+@media (max-width:520px){
+  .disclaimer-bar{
+    flex-direction:column;
   }
 
-  /* compact emblem row */
-  .house-emblem-area {
-    flex-direction: row !important;
-    flex-wrap: wrap !important;
-    justify-content: center !important;
-    gap: 12px !important;
-    padding: 8px 0 !important;
+  .disclaimer-close{
+    align-self:flex-end;
   }
 
-  /* ---------- Timeline ---------- */
-  /* shrink header space that pushes content too low */
-  #page-timeline::before,
-  #page-timeline::after {              /* vignette overlays          */
-    inset: 100px 0 0 !important;
+  .map-legend{
+    min-width:0 !important;
+    width:min(170px,calc(100vw - 20px)) !important;
   }
-  #page-timeline .timeline-scroll {
-    padding: 14px 12px 100px !important;
-    max-width: 100% !important;
+
+  .legend-title{
+    gap:8px !important;
+    font-size:.54rem !important;
+    letter-spacing:.2em !important;
   }
-  /* switch to a 2-column CSS grid instead of 3-col float math */
-  #page-timeline .timeline-item {
-    display: grid !important;
-    grid-template-columns: 28px minmax(0,1fr) !important; /* rail + card */
-    grid-template-rows: auto auto !important;
-    column-gap: 10px !important;
-    row-gap: 0 !important;
-    padding: 0 0 16px !important;
+
+  .legend-item{
+    font-size:.58rem !important;
   }
-  .timeline-dateplate {                /* moves date above card      */
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    margin-bottom: 6px !important;
-    font-size: .52rem !important;
-    max-width: calc(100vw - 70px) !important;
-  }
-  .timeline-rail  { grid-column: 1 !important; grid-row: 1 / span 2 !important; }
-  .timeline-card  { grid-column: 2 !important; grid-row: 2 !important; }
-  /* era-marker pill: center & hide extender lines */
-  .timeline-era-marker {
-    justify-content: center !important;
-    margin: 18px 0 10px !important;
-  }
-  .timeline-era-marker::before,
-  .timeline-era-marker::after { display: none !important; }
 }
-/* ===== END MOBILE FIX PATCH ===== */
