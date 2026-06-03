@@ -7,21 +7,18 @@ let mapPanY = 0;
 let mapRendered = false;
 let pageTransitionTimer = null;
 let pageTransitionClearTimer = null;
+
 const PAGE_TRANSITION_SWAP_MS = 240;
 const PAGE_TRANSITION_TOTAL_MS = 600;
+
+// ===== MAJOR TRANSITION DETECTION =====
 function isMajorTransition(fromPage, toPage) {
   const majorRoutes = [
-    ['home', 'map'],
-    ['map', 'home'],
-    ['map', 'house'],
-    ['house', 'map'],
-    ['house', 'character'],
-    ['character', 'house']
+    ['home','map'],['map','home'],
+    ['map','house'],['house','map'],
+    ['house','character'],['character','house']
   ];
-
-  return majorRoutes.some(
-    ([from, to]) => from === fromPage && to === toPage
-  );
+  return majorRoutes.some(([from,to]) => from === fromPage && to === toPage);
 }
 
 // ===== NAVIGATION =====
@@ -41,81 +38,72 @@ function preparePage(pageId) {
     renderSearch('');
     const si = document.getElementById('searchInput');
     if (si) si.value = '';
+    resetSearchFilter();
   }
 }
 
 function clearPageTransition(overlay, pages) {
   if (overlay) overlay.classList.remove('flipping');
   document.body.classList.remove('page-transitioning');
-  pages.forEach(p => p.classList.remove('page-leaving', 'page-entering'));
+  if (pages) pages.forEach(p => p.classList.remove('page-leaving','page-entering'));
 }
 
-function navigateTo(pageId) {
-  if (pageId === 'search') {
-    resetSearchFilter();
-  }
-
-  const overlay = document.getElementById('flipOverlay');
+function navigateTo(pageId) {  const overlay = document.getElementById('flipOverlay');
   const pages = Array.from(document.querySelectorAll('.page'));
   const target = document.getElementById('page-' + pageId);
   if (!target) return;
-  const currentPageEl = document.querySelector('.page.active');
-const currentPageId = currentPageEl
-  ? currentPageEl.id.replace('page-', '')
-  : '';
 
-const useFlip = isMajorTransition(currentPageId, pageId);
+  const currentPageEl = document.querySelector('.page.active');
+  const currentPageId = currentPageEl ? currentPageEl.id.replace('page-','') : '';
+
+  // Don't re-navigate to the same page
+  if (currentPageEl === target) return;
+
+  const useFlip = isMajorTransition(currentPageId, pageId);
 
   clearTimeout(pageTransitionTimer);
   clearTimeout(pageTransitionClearTimer);
   clearPageTransition(overlay, pages);
+
+  // Prepare content before animating
   preparePage(pageId);
 
-  const activePages = pages.filter(p => p.classList.contains('active'));
-  const alreadyActive = activePages.length === 1 && activePages[0] === target;
-  if (alreadyActive) return;
+  document.body.classList.add('page-transitioning');
 
-  if (!overlay) {
-    pages.forEach(p => {
-      p.classList.remove('active', 'page-visible');
-      p.style.display = 'none';
-      p.style.opacity = '';
-    });
-    target.style.display = 'flex';
-    target.style.opacity = '';
-    target.classList.add('active', 'page-visible');
-    return;
+  // Mark leaving page
+  if (currentPageEl) {
+    currentPageEl.classList.add('page-leaving');
   }
 
-  document.body.classList.add('page-transitioning');
-  activePages.forEach(p => p.classList.add('page-leaving'));
-  overlay.classList.remove('flipping');
-  void overlay.offsetWidth;
-if (useFlip) {
-  navigator.vibrate?.(12);
-  overlay.classList.add('flipping');
-} 
+  // Trigger flip if applicable
+  if (useFlip && overlay) {
+    navigator.vibrate?.(12);
+    overlay.classList.remove('flipping');
+    void overlay.offsetWidth; // reflow to restart animation
+    overlay.classList.add('flipping');
+  }
 
   pageTransitionTimer = setTimeout(() => {
+    // Hide all non-target pages
     pages.forEach(p => {
       if (p === target) return;
-      p.classList.remove('active');
-      p.classList.remove('page-visible');
-      p.classList.remove('page-leaving', 'page-entering');
+      p.classList.remove('active','page-leaving','page-entering');
       p.style.display = 'none';
       p.style.opacity = '';
     });
 
+    // Show target
     target.classList.remove('page-entering');
     target.style.display = 'flex';
     target.style.opacity = '';
     target.classList.add('active');
-    void target.offsetWidth;
-    target.classList.add('page-visible', 'page-entering');
+    void target.offsetWidth; // reflow — ensures page-entering animation fires fresh
+    target.classList.add('page-entering');
 
-   pageTransitionClearTimer = setTimeout(() => {
-  clearPageTransition(overlay, pages);
-}, useFlip ? (PAGE_TRANSITION_TOTAL_MS - PAGE_TRANSITION_SWAP_MS) : 180);
+    pageTransitionClearTimer = setTimeout(() => {
+      clearPageTransition(overlay, pages);
+    }, useFlip ? (PAGE_TRANSITION_TOTAL_MS - PAGE_TRANSITION_SWAP_MS) : 200);
+
   }, useFlip ? PAGE_TRANSITION_SWAP_MS : 120);
 }
 
@@ -123,12 +111,11 @@ if (useFlip) {
 function renderMap() {
   const container = document.getElementById('mapPins');
   if (!container) return;
-  if (mapRendered) {
-    applyMapZoom();
-    return;
-  }
+  if (mapRendered) { applyMapZoom(); return; }
+
   container.innerHTML = '';
   applyMapZoom();
+
   const tooltip = document.getElementById('mapTooltip');
   const mapEl = document.getElementById('mapContainer');
   if (!tooltip || !mapEl) return;
@@ -140,73 +127,73 @@ function renderMap() {
     pin.style.left = loc.x + '%';
     pin.style.top = loc.y + '%';
     pin.style.setProperty('--pin-index', i);
-    // FIX: Escape loc.name to prevent XSS from data
     pin.innerHTML =
       (h ? '<div class="pin-sigil">' + h.sigil + '</div>' : '') +
       '<div class="pin-dot"></div>' +
       '<div class="pin-label">' + escapeHtml(loc.name) + '</div>';
 
+    // Mouse events for desktop tooltip
     pin.addEventListener('mouseenter', e => {
-      tooltip.classList.add('visible');
-      document.getElementById('tooltipHouse').textContent = h ? h.name : 'Free City / Notable Location';
-      document.getElementById('tooltipLocation').textContent = loc.name;
-      document.getElementById('tooltipDesc').textContent = loc.desc;
+      showTooltip(tooltip, h, loc);
       positionTooltip(e, tooltip, mapEl);
     });
     pin.addEventListener('mousemove', e => positionTooltip(e, tooltip, mapEl));
-    pin.addEventListener('mouseleave', () => tooltip.classList.remove('visible'));
-
-    // Mobile: show tooltip info when touch-show is toggled
-    const observer = new MutationObserver(() => {
-      if (pin.classList.contains('touch-show')) {
-        document.getElementById('tooltipHouse').textContent = h ? h.name : 'Free City / Notable Location';
-        document.getElementById('tooltipLocation').textContent = loc.name;
-        document.getElementById('tooltipDesc').textContent = loc.desc;
-        tooltip.classList.add('visible', 'mobile-pin-tooltip');
-      } else {
-        // Only hide if this pin's tooltip is showing
-        if (tooltip.classList.contains('mobile-pin-tooltip')) {
-          tooltip.classList.remove('visible', 'mobile-pin-tooltip');
-        }
+    pin.addEventListener('mouseleave', () => {
+      if (!tooltip.classList.contains('mobile-pin-tooltip')) {
+        tooltip.classList.remove('visible');
       }
     });
-    observer.observe(pin, { attributes: true, attributeFilter: ['class'] });
+
     if (loc.house) {
       pin.dataset.house = loc.house;
-      pin.addEventListener('click', () => { currentHouse = loc.house; navigateTo('house'); });
+      pin.addEventListener('click', () => {
+        // Only navigate on click if NOT a touch device showing first-tap reveal
+        // (touch flow handled separately in enableTouchPins)
+        if (!('ontouchstart' in window)) {
+          currentHouse = loc.house;
+          navigateTo('house');
+        }
+      });
     }
+
     container.appendChild(pin);
   });
 
-  enableTouchPins();
+  enableTouchPins(tooltip);
 
+  // Legend
   const legend = document.getElementById('legendItems');
   if (!legend) return;
   legend.innerHTML = '';
   Object.entries(HOUSES).forEach(([key, h]) => {
     const item = document.createElement('div');
     item.className = 'legend-item';
-    item.innerHTML = h.sigil + '<span class="legend-text">' + escapeHtml(h.name.replace('House ', '')) + '</span>';
+    item.innerHTML = h.sigil + '<span class="legend-text">' + escapeHtml(h.name.replace('House ','')) + '</span>';
     item.addEventListener('click', () => { currentHouse = key; navigateTo('house'); });
     legend.appendChild(item);
   });
+
   mapRendered = true;
 }
 
+function showTooltip(tooltip, h, loc) {
+  document.getElementById('tooltipHouse').textContent = h ? h.name : 'Free City / Notable Location';
+  document.getElementById('tooltipLocation').textContent = loc.name;
+  document.getElementById('tooltipDesc').textContent = loc.desc;
+  tooltip.classList.add('visible');
+}
+
 // ===== TOUCH PINS =====
-// Mobile pin interaction:
-// - First tap: show label/tooltip (touch-show)
-// - Second tap on same pin (already touch-show): navigate if it has a house
-// - Tap elsewhere: dismiss
 let _touchPinsDismissAttached = false;
 let _suppressDismiss = false;
 
-function enableTouchPins() {
+function enableTouchPins(tooltip) {
+  const isTouchDevice = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  if (!isTouchDevice) return;
+
   document.querySelectorAll('.map-pin').forEach(pin => {
     pin.addEventListener('touchstart', e => {
       e.stopPropagation();
-      // DO NOT call preventDefault here — it blocks the synthetic click
-      // needed for navigation. Instead manage state manually.
       _suppressDismiss = true;
 
       const alreadyShown = pin.classList.contains('touch-show');
@@ -217,16 +204,30 @@ function enableTouchPins() {
       });
 
       if (alreadyShown) {
-        // Second tap on an already-revealed pin: navigate
+        // Second tap: navigate if has house
         pin.classList.remove('touch-show');
+        tooltip.classList.remove('visible','mobile-pin-tooltip');
         const houseKey = pin.dataset.house;
         if (houseKey) {
           currentHouse = houseKey;
           navigateTo('house');
         }
       } else {
-        // First tap: just reveal
+        // First tap: reveal & show tooltip at bottom
         pin.classList.add('touch-show');
+        const loc = LOCATIONS.find(l => {
+          const px = parseFloat(pin.style.left);
+          const py = parseFloat(pin.style.top);
+          return Math.abs(l.x - px) < 0.01 && Math.abs(l.y - py) < 0.01;
+        });
+        if (loc) {
+          const h = loc.house ? HOUSES[loc.house] : null;
+          showTooltip(tooltip, h, loc);
+          // Force fixed bottom position on mobile
+          tooltip.classList.add('mobile-pin-tooltip');
+          tooltip.style.left = '';
+          tooltip.style.top = '';
+        }
       }
 
       requestAnimationFrame(() => { _suppressDismiss = false; });
@@ -238,20 +239,22 @@ function enableTouchPins() {
     document.addEventListener('touchstart', () => {
       if (_suppressDismiss) return;
       document.querySelectorAll('.map-pin.touch-show').forEach(p => p.classList.remove('touch-show'));
+      tooltip.classList.remove('visible','mobile-pin-tooltip');
     }, { passive: true });
   }
 }
 
 function positionTooltip(e, tooltip, container) {
+  // Skip repositioning if in mobile-pinned mode
+  if (tooltip.classList.contains('mobile-pin-tooltip')) return;
+
   const rect = container.getBoundingClientRect();
-  // FIX: Use actual tooltip dimensions instead of hardcoded magic numbers
-  const tw = tooltip.offsetWidth || 280;
+  const tw = tooltip.offsetWidth || 260;
   const th = tooltip.offsetHeight || 160;
   let x = e.clientX - rect.left + 16;
   let y = e.clientY - rect.top + 16;
   if (x + tw > rect.width) x = e.clientX - rect.left - tw - 8;
   if (y + th > rect.height) y = e.clientY - rect.top - th - 8;
-  // FIX: Clamp so tooltip never goes off the left/top edge
   x = Math.max(0, x);
   y = Math.max(0, y);
   tooltip.style.left = x + 'px';
@@ -270,9 +273,9 @@ function renderHousePage(houseKey) {
   }
 
   document.getElementById('houseSigilLarge').innerHTML = h.sigil;
-document.getElementById('houseNameBook').textContent = h.name;
-document.getElementById('houseWordsBook').textContent = h.words;
-document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
+  document.getElementById('houseNameBook').textContent = h.name;
+  document.getElementById('houseWordsBook').textContent = h.words;
+  document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.seat;
   document.getElementById('bookSpineText').textContent = h.name;
 
   const lines = document.getElementById('pageLines');
@@ -293,9 +296,9 @@ document.getElementById('houseRegionBook').textContent = h.region + ' · ' + h.s
     card.className = 'char-card';
     card.style.setProperty('--item-index', i);
     const sc = ch.status || 'unknown';
-    const sl = { alive: 'Living', dead: 'Deceased', unknown: 'Unknown' }[sc] || 'Unknown';
+    const sl = { alive:'Living', dead:'Deceased', unknown:'Unknown' }[sc] || 'Unknown';
     card.innerHTML =
-      '<div class="char-avatar" style="background:none;border:none">' + ch.portrait + '</div>' +
+      '<div class="char-avatar">' + ch.portrait + '</div>' +
       '<div class="char-info"><div class="char-name">' + escapeHtml(ch.name) + '</div><div class="char-role">' + escapeHtml(ch.title) + '</div></div>' +
       '<div class="char-status ' + sc + '">' + sl + '</div>';
     card.addEventListener('click', () => { currentChar = ck; navigateTo('character'); });
@@ -340,7 +343,6 @@ function renderCharPage(charKey) {
 }
 
 // ===== SEARCH =====
-// FIX: Debounced search — prevents firing on every single keystroke
 let _searchDebounceTimer = null;
 function doSearch(query) {
   clearTimeout(_searchDebounceTimer);
@@ -351,7 +353,6 @@ function setFilter(f, btn) {
   searchFilter = f;
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  // FIX: Read input value safely
   const input = document.getElementById('searchInput');
   doSearch(input ? input.value : '');
 }
@@ -366,24 +367,23 @@ function renderSearch(query) {
   if (searchFilter === 'all' || searchFilter === 'house') {
     Object.entries(HOUSES).forEach(([key, h]) => {
       if (!q || h.name.toLowerCase().includes(q) || h.region.toLowerCase().includes(q) || h.seat.toLowerCase().includes(q))
-        items.push({ type: 'house', key, display: h.name, sub: h.region + ' · ' + h.seat, sigil: h.sigil });
+        items.push({ type:'house', key, display:h.name, sub:h.region + ' · ' + h.seat, sigil:h.sigil });
     });
   }
   if (searchFilter === 'all' || searchFilter === 'character') {
     Object.entries(CHARACTERS).forEach(([key, ch]) => {
       if (!q || ch.name.toLowerCase().includes(q) || ch.title.toLowerCase().includes(q) || (ch.house && ch.house.toLowerCase().includes(q)))
-        items.push({ type: 'character', key, display: ch.name, sub: ch.title, sigil: ch.portrait, isSvg: true });
+        items.push({ type:'character', key, display:ch.name, sub:ch.title, sigil:ch.portrait });
     });
   }
   if (searchFilter === 'all' || searchFilter === 'location') {
     LOCATIONS.forEach(loc => {
       const h = loc.house ? HOUSES[loc.house] : null;
       if (!q || loc.name.toLowerCase().includes(q) || loc.desc.toLowerCase().includes(q)) {
-        // FIX: Smart truncation — don't cut mid-word
         const sub = loc.desc.length > 58
           ? loc.desc.substring(0, loc.desc.lastIndexOf(' ', 58)) + '…'
           : loc.desc;
-        items.push({ type: 'location', key: loc.id, display: loc.name, sub, sigil: h ? h.sigil : '🗺' });
+        items.push({ type:'location', key:loc.id, display:loc.name, sub, sigil:h ? h.sigil : '🗺' });
       }
     });
   }
@@ -393,7 +393,6 @@ function renderSearch(query) {
     return;
   }
 
-  // FIX: Use a DocumentFragment to batch DOM insertions — better performance
   const fragment = document.createDocumentFragment();
   items.forEach((item, i) => {
     const card = document.createElement('div');
@@ -436,13 +435,104 @@ function zoomMap(amount) {
 }
 
 function resetMapZoom() {
-  mapZoom = 1;
-  mapPanX = 0;
-  mapPanY = 0;
+  mapZoom = 1; mapPanX = 0; mapPanY = 0;
   applyMapZoom();
 }
 
-// ===== RENDER TIMELINE =====
+// ===== DRAG TO PAN MAP =====
+let _mapDragEnabled = false;
+function enableMapDrag() {
+  const stage = document.getElementById('mapStage');
+  if (!stage || _mapDragEnabled) return;
+  _mapDragEnabled = true;
+
+  let dragging = false;
+  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
+  let hasMoved = false;
+
+  function startDrag(x, y) {
+    dragging = true; hasMoved = false;
+    startX = x; startY = y;
+    startPanX = mapPanX; startPanY = mapPanY;
+    document.body.style.cursor = 'grabbing';
+    const mc = document.getElementById('mapContainer');
+    if (mc) mc.classList.add('dragging');
+  }
+  function moveDrag(x, y) {
+    if (!dragging) return;
+    const dx = x - startX, dy = y - startY;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
+    mapPanX = startPanX + dx;
+    mapPanY = startPanY + dy;
+    applyMapZoom();
+  }
+  function endDrag() {
+    dragging = false;
+    document.body.style.cursor = '';
+    const mc = document.getElementById('mapContainer');
+    if (mc) mc.classList.remove('dragging');
+  }
+
+  // Mouse
+  stage.addEventListener('mousedown', e => {
+    if (e.target.closest('.map-pin')) return;
+    startDrag(e.clientX, e.clientY);
+  });
+  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
+  document.addEventListener('mouseup', endDrag);
+
+  // Touch (single finger pan + two finger pinch)
+  let _lastPinchDist = null;
+  stage.addEventListener('touchstart', e => {
+    if (e.target.closest('.map-pin')) return;
+    if (e.touches.length === 1) {
+      startDrag(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (e.touches.length === 2) {
+      dragging = false;
+      _lastPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchmove', e => {
+    if (e.touches.length === 1) {
+      moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+    } else if (e.touches.length === 2 && _lastPinchDist !== null) {
+      const dist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const delta = (dist - _lastPinchDist) * 0.005;
+      mapZoom = Math.min(2.5, Math.max(0.6, mapZoom + delta));
+      _lastPinchDist = dist;
+      applyMapZoom();
+    }
+  }, { passive: true });
+
+  stage.addEventListener('touchend', e => {
+    if (e.touches.length < 2) _lastPinchDist = null;
+    endDrag();
+  });
+}
+
+// ===== LEGEND DROPDOWN =====
+function enableLegendDropdown() {
+  const legend = document.querySelector('.map-legend');
+  const title = document.querySelector('.legend-title');
+  const items = document.getElementById('legendItems');
+  if (!legend || !title || !items) return;
+
+  title.addEventListener('click', e => {
+    e.stopPropagation();
+    legend.classList.toggle('open');
+  });
+  items.addEventListener('click', e => e.stopPropagation());
+  document.addEventListener('click', () => legend.classList.remove('open'));
+}
+
+// ===== TIMELINE =====
 function renderTimeline() {
   const list = document.getElementById('timelineList');
   if (!list) return;
@@ -457,9 +547,8 @@ function renderTimeline() {
   }
 
   const events = [...TIMELINE_EVENTS].sort((a, b) => {
-    const yearDiff = a.year - b.year;
-    if (yearDiff !== 0) return yearDiff;
-    return (a.order || 0) - (b.order || 0);
+    const yd = a.year - b.year;
+    return yd !== 0 ? yd : (a.order || 0) - (b.order || 0);
   });
 
   const intro = document.createElement('div');
@@ -507,15 +596,12 @@ function renderTimeline() {
 
     const card = document.createElement('div');
     card.className = 'timeline-card';
-
     const top = document.createElement('div');
     top.className = 'timeline-card-top';
-
     const meta = document.createElement('div');
     meta.className = 'timeline-meta';
     if (ev.type) meta.appendChild(createTimelineChip(ev.type, 'timeline-chip type'));
     if (ev.location) meta.appendChild(createTimelineChip(ev.location, 'timeline-chip location'));
-
     const sigils = document.createElement('div');
     sigils.className = 'timeline-sigils';
     (ev.factions || []).forEach(key => {
@@ -527,14 +613,12 @@ function renderTimeline() {
       sigil.innerHTML = house.sigil;
       sigils.appendChild(sigil);
     });
-
     top.appendChild(meta);
     if (sigils.children.length) top.appendChild(sigils);
 
     const title = document.createElement('div');
     title.className = 'timeline-title';
     title.textContent = ev.title;
-
     const desc = document.createElement('div');
     desc.className = 'timeline-desc';
     desc.textContent = ev.desc;
@@ -574,108 +658,13 @@ function createTimelineChip(text, className) {
   return chip;
 }
 
-// ===== LEGEND DROPDOWN =====
-function enableLegendDropdown() {
-  const legend = document.querySelector('.map-legend');
-  const title = document.querySelector('.legend-title');
-  const items = document.getElementById('legendItems');
-  if (!legend || !title || !items) return;
-
-  title.addEventListener('click', e => {
-    e.stopPropagation();
-    legend.classList.toggle('open');
-  });
-  items.addEventListener('click', e => e.stopPropagation());
-  document.addEventListener('click', () => legend.classList.remove('open'));
-}
-
-// ===== DRAG TO PAN MAP (mouse + touch) =====
-let _mapDragEnabled = false;
-function enableMapDrag() {
-  const stage = document.getElementById('mapStage');
-  if (!stage || _mapDragEnabled) return;
-  _mapDragEnabled = true;
-
-  let dragging = false;
-  let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-  // FIX: Track if drag actually moved, so a tap on the map doesn't count as a drag
-  let hasMoved = false;
-
-  function startDrag(x, y) {
-    dragging = true;
-    hasMoved = false;
-    startX = x; startY = y;
-    startPanX = mapPanX; startPanY = mapPanY;
-    document.body.style.cursor = 'grabbing';
-  }
-  function moveDrag(x, y) {
-    if (!dragging) return;
-    const dx = x - startX;
-    const dy = y - startY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
-    mapPanX = startPanX + dx;
-    mapPanY = startPanY + dy;
-    applyMapZoom();
-  }
-  function endDrag() {
-    dragging = false;
-    document.body.style.cursor = '';
-  }
-
-  // Mouse
-  stage.addEventListener('mousedown', e => {
-    if (e.target.closest('.map-pin')) return;
-    startDrag(e.clientX, e.clientY);
-  });
-  document.addEventListener('mousemove', e => moveDrag(e.clientX, e.clientY));
-  document.addEventListener('mouseup', endDrag);
-
-  // FIX: Pinch-to-zoom support on mobile
-  let _lastPinchDist = null;
-  stage.addEventListener('touchstart', e => {
-    if (e.target.closest('.map-pin')) return;
-    if (e.touches.length === 1) {
-      startDrag(e.touches[0].clientX, e.touches[0].clientY);
-    } else if (e.touches.length === 2) {
-      dragging = false;
-      _lastPinchDist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-    }
-  }, { passive: true });
-
-  stage.addEventListener('touchmove', e => {
-    if (e.touches.length === 1) {
-      moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-    } else if (e.touches.length === 2 && _lastPinchDist !== null) {
-      const dist = Math.hypot(
-        e.touches[0].clientX - e.touches[1].clientX,
-        e.touches[0].clientY - e.touches[1].clientY
-      );
-      const delta = (dist - _lastPinchDist) * 0.005;
-      mapZoom = Math.min(2.5, Math.max(0.6, mapZoom + delta));
-      _lastPinchDist = dist;
-      applyMapZoom();
-    }
-  }, { passive: true });
-
-  stage.addEventListener('touchend', e => {
-    if (e.touches.length < 2) _lastPinchDist = null;
-    endDrag();
-  });
-}
-
-// ===== AMBIENT UI MOTION =====
+// ===== HOME PARALLAX =====
 function enableHomeParallax() {
   const home = document.getElementById('page-home');
   if (!home || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
 
-  let ticking = false;
-  let nextX = 0;
-  let nextY = 0;
-
+  let ticking = false, nextX = 0, nextY = 0;
   window.addEventListener('pointermove', e => {
     nextX = (0.5 - e.clientX / window.innerWidth) * 18;
     nextY = (0.5 - e.clientY / window.innerHeight) * 12;
@@ -690,18 +679,14 @@ function enableHomeParallax() {
 }
 
 // ===== UTILITY =====
-// FIX: Helper to safely escape strings before injecting into innerHTML
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
-// ===== INIT — run once after DOM ready =====
+// ===== INIT =====
 document.addEventListener('DOMContentLoaded', () => {
   enableLegendDropdown();
   enableMapDrag();
