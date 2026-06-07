@@ -279,13 +279,7 @@ function renderHousePage(houseKey) {
   document.getElementById('bookSpineText').textContent = h.name;
 
   const lines = document.getElementById('pageLines');
-  lines.innerHTML = '';
-  for (let i = 0; i < 18; i++) {
-    const l = document.createElement('div');
-    l.className = 'page-line';
-    l.style.top = (60 + i * 28) + 'px';
-    lines.appendChild(l);
-  }
+  if (lines) lines.innerHTML = '';
 
   const charList = document.getElementById('charList');
   charList.innerHTML = '';
@@ -448,10 +442,9 @@ function enableMapDrag() {
 
   let dragging = false;
   let startX = 0, startY = 0, startPanX = 0, startPanY = 0;
-  let hasMoved = false;
 
   function startDrag(x, y) {
-    dragging = true; hasMoved = false;
+    dragging = true;
     startX = x; startY = y;
     startPanX = mapPanX; startPanY = mapPanY;
     document.body.style.cursor = 'grabbing';
@@ -461,7 +454,6 @@ function enableMapDrag() {
   function moveDrag(x, y) {
     if (!dragging) return;
     const dx = x - startX, dy = y - startY;
-    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
     mapPanX = startPanX + dx;
     mapPanY = startPanY + dy;
     applyMapZoom();
