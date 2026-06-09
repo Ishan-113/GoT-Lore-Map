@@ -684,3 +684,251 @@ document.addEventListener('DOMContentLoaded', () => {
   enableMapDrag();
   enableHomeParallax();
 });
+
+// ===== EMBER PARTICLE SYSTEM =====
+function initEmbers() {
+  const canvas = document.createElement('canvas');
+  canvas.id = 'emberCanvas';
+  const home = document.getElementById('page-home');
+  if (!home) return;
+  home.insertBefore(canvas, home.firstChild);
+
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], animFrame;
+  const MAX = 55;
+
+  function resize() {
+    W = canvas.width = home.offsetWidth;
+    H = canvas.height = home.offsetHeight;
+  }
+
+  function randomParticle(forceBottom) {
+    const x = Math.random() * W;
+    const y = forceBottom ? H + 10 : Math.random() * H;
+    const size = Math.random() * 2.4 + 0.6;
+    const speed = Math.random() * 0.5 + 0.18;
+    const drift = (Math.random() - 0.5) * 0.4;
+    const life = Math.random() * 0.7 + 0.3;
+    const maxLife = Math.random() * 280 + 180;
+    // colour: ember orange → gold → pale yellow
+    const hue = Math.random() > 0.5
+      ? `rgba(${200 + Math.random()*40|0},${80 + Math.random()*60|0},${20 + Math.random()*20|0},`
+      : `rgba(${230 + Math.random()*25|0},${170 + Math.random()*40|0},${50 + Math.random()*30|0},`;
+    return { x, y, size, speed, drift, life, maxLife, age: 0, hue, wobble: Math.random()*Math.PI*2, wobbleSpeed: (Math.random()-0.5)*0.04 };
+  }
+
+  function spawn() {
+    while (particles.length < MAX) particles.push(randomParticle(true));
+  }
+
+  function tick() {
+    if (!document.getElementById('page-home')?.classList.contains('active')) {
+      animFrame = requestAnimationFrame(tick);
+      return;
+    }
+    ctx.clearRect(0, 0, W, H);
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.age++;
+      p.wobble += p.wobbleSpeed;
+      p.x += p.drift + Math.sin(p.wobble) * 0.35;
+      p.y -= p.speed;
+
+      // fade in/out
+      const progress = p.age / p.maxLife;
+      const alpha = progress < 0.15
+        ? (progress / 0.15) * p.life
+        : progress > 0.75
+          ? ((1 - progress) / 0.25) * p.life
+          : p.life;
+
+      // glow
+      const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.size * 3.5);
+      grd.addColorStop(0, p.hue + Math.min(alpha, 1) + ')');
+      grd.addColorStop(0.4, p.hue + (alpha * 0.5) + ')');
+      grd.addColorStop(1, p.hue + '0)');
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 3.5, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // core
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size * 0.7, 0, Math.PI * 2);
+      ctx.fillStyle = p.hue + Math.min(alpha * 1.4, 1) + ')';
+      ctx.fill();
+
+      if (p.age > p.maxLife || p.y < -20) {
+        particles[i] = randomParticle(true);
+      }
+    }
+    animFrame = requestAnimationFrame(tick);
+  }
+
+  resize();
+  spawn();
+  tick();
+  window.addEventListener('resize', () => { resize(); }, { passive: true });
+}
+
+// ===== SCROLL-TRIGGERED REVEAL (IntersectionObserver) =====
+function initScrollReveal() {
+  if (!('IntersectionObserver' in window)) return;
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('revealed');
+        io.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  // observe timeline cards, result cards whenever they're added
+  function observeAll() {
+    document.querySelectorAll('.timeline-card:not(.revealed), .result-card:not(.revealed)').forEach(el => io.observe(el));
+  }
+
+  // run on nav
+  const origNavigateTo = window.navigateTo;
+  window.navigateTo = function(pageId) {
+    origNavigateTo(pageId);
+    setTimeout(observeAll, 600);
+  };
+  observeAll();
+}
+
+// ===== MAGNETIC HOVER ON MAP PINS =====
+function initMagneticPins() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  document.addEventListener('mousemove', e => {
+    document.querySelectorAll('.map-pin').forEach(pin => {
+      const rect = pin.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const RADIUS = 60;
+      if (dist < RADIUS) {
+        const strength = (1 - dist / RADIUS) * 8;
+        pin.style.transform = `translate(${dx * strength / dist}px, ${dy * strength / dist}px) scale(1.1)`;
+      } else {
+        pin.style.transform = '';
+      }
+    });
+  }, { passive: true });
+}
+
+// ===== 3D TILT ON RESULT CARDS =====
+function initCardTilt() {
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  document.addEventListener('mousemove', e => {
+    const card = e.target.closest('.result-card');
+    if (!card) {
+      // reset all
+      document.querySelectorAll('.result-card.tilting').forEach(c => {
+        c.style.transform = '';
+        c.classList.remove('tilting');
+      });
+      return;
+    }
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;   // -0.5 → 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    const rotX = -y * 8;
+    const rotY = x * 8;
+    card.style.transform = `translateY(-5px) scale(1.01) perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+    card.classList.add('tilting');
+  }, { passive: true });
+
+  document.addEventListener('mouseleave', () => {
+    document.querySelectorAll('.result-card.tilting').forEach(c => {
+      c.style.transform = '';
+      c.classList.remove('tilting');
+    });
+  }, { passive: true });
+}
+
+// ===== BOOK 3D MOUSE PARALLAX =====
+function initBookParallax() {
+  const wrapper = document.getElementById('page-house');
+  if (!wrapper) return;
+  if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+
+  wrapper.addEventListener('mousemove', e => {
+    const bookEl = document.getElementById('bookEl');
+    if (!bookEl) return;
+    const rect = wrapper.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    bookEl.style.transform = `perspective(1400px) rotateY(${x * 6}deg) rotateX(${-y * 4}deg) scale(1.012)`;
+  }, { passive: true });
+
+  wrapper.addEventListener('mouseleave', () => {
+    const bookEl = document.getElementById('bookEl');
+    if (bookEl) bookEl.style.transform = '';
+  }, { passive: true });
+}
+
+// ===== GLINT ON GOLD TEXT =====
+function initGoldGlint() {
+  // Add a subtle travelling highlight to home title on hover
+  const title = document.querySelector('.home-title');
+  if (!title) return;
+  title.style.backgroundImage = 'linear-gradient(90deg, var(--gold-light) 0%, #fff8dc 45%, var(--gold-light) 55%, var(--gold) 100%)';
+  title.style.backgroundSize = '200%';
+  title.style.webkitBackgroundClip = 'text';
+  title.style.backgroundClip = 'text';
+  title.style.webkitTextFillColor = 'transparent';
+  title.style.animation = 'goldGlint 4s ease-in-out infinite alternate, titleGlow 4s ease-in-out infinite alternate';
+
+  if (!document.getElementById('goldGlintStyle')) {
+    const s = document.createElement('style');
+    s.id = 'goldGlintStyle';
+    s.textContent = `@keyframes goldGlint{0%{background-position:0% 50%;filter:drop-shadow(0 0 20px rgba(240,208,128,.3))}100%{background-position:100% 50%;filter:drop-shadow(0 0 45px rgba(240,208,128,.7))}}`;
+    document.head.appendChild(s);
+  }
+}
+
+// ===== STAGGER VITALS ON CHAR PAGE =====
+const _origRenderCharPage = window.renderCharPage;
+
+// ===== CURSOR RIPPLE on click =====
+function initClickRipple() {
+  document.addEventListener('click', e => {
+    if (e.target.closest('.map-pin, .char-card, .result-card, .enter-btn, .nav-tab')) {
+      const ripple = document.createElement('div');
+      ripple.style.cssText = `
+        position:fixed;left:${e.clientX}px;top:${e.clientY}px;
+        width:4px;height:4px;border-radius:50%;pointer-events:none;z-index:9999;
+        background:radial-gradient(circle,rgba(240,208,128,.9),rgba(201,168,76,.4),transparent);
+        transform:translate(-50%,-50%) scale(0);
+        animation:rippleOut .5s var(--ease-out-expo) forwards;
+      `;
+      document.body.appendChild(ripple);
+      if (!document.getElementById('rippleStyle')) {
+        const s = document.createElement('style');
+        s.id = 'rippleStyle';
+        s.textContent = `@keyframes rippleOut{0%{transform:translate(-50%,-50%) scale(0);opacity:1}100%{transform:translate(-50%,-50%) scale(28);opacity:0}}`;
+        document.head.appendChild(s);
+      }
+      setTimeout(() => ripple.remove(), 520);
+    }
+  });
+}
+
+// ===== INIT ALL =====
+document.addEventListener('DOMContentLoaded', () => {
+  enableLegendDropdown();
+  enableMapDrag();
+  enableHomeParallax();
+  initEmbers();
+  initScrollReveal();
+  initMagneticPins();
+  initCardTilt();
+  initBookParallax();
+  initGoldGlint();
+  initClickRipple();
+});
