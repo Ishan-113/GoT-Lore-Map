@@ -1,96 +1,64 @@
-# ⚔️ The Known World — Game of Thrones Interactive Lore Map
+# GoT Lore Map
 
-An immersive, medieval-fantasy styled interactive lore compendium inspired by the world of Ice and Fire. Explore the Known World, discover Great Houses, and dive into detailed character profiles — all wrapped in a hand-crafted parchment aesthetic.
+[![HTML](https://img.shields.io/badge/HTML5-Markup-e34f26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS](https://img.shields.io/badge/CSS3-Styling-1572b6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-f7df1e?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Vercel](https://img.shields.io/badge/Live-Vercel-000000?logo=vercel)](https://go-t-lore-map.vercel.app/)
 
----
+An interactive Game of Thrones lore map built with vanilla HTML, CSS, and JavaScript. The project presents houses, locations, character profiles, search, and timeline content in a responsive fantasy-themed interface.
 
-## 🗺️ Features
+## Live Demo
 
-- **Interactive World Map** — The full book-accurate map of Westeros and Essos with 14 clickable locations, house sigils, and hover tooltips
-- **House Book View** — Animated book-opening effect revealing each Great House with members listed on parchment pages
-- **Character Profiles** — Detailed profile pages with biography, battles fought, iconic moments, lineage, and final status
-- **Search & Filter** — Search across all houses, characters, and locations with filter buttons
-- **Page Flip Animations** — Smooth parchment-style transitions between all pages
-- **Medieval Design** — Dark royal colors, gold accents, aged parchment textures, and Cinzel serif fonts throughout
+[go-t-lore-map.vercel.app](https://go-t-lore-map.vercel.app/)
 
----
+## Features
 
-## 🏰 Houses Covered
+- Interactive lore map with clickable locations across Westeros and Essos.
+- House pages with sigils, words, seats, regions, and member lists.
+- Character profile pages with biography-style lore summaries.
+- Search and archive-style pages for houses, characters, and locations.
+- Lore timeline view for major events.
+- Responsive design for desktop and mobile screens.
+- Custom medieval visual style using CSS animations, parchment textures, and themed typography.
 
-| House | Sigil | Region | Seat |
-|-------|-------|--------|------|
-| Stark | 🐺 | The North | Winterfell |
-| Lannister | 🦁 | The Westerlands | Casterly Rock |
-| Baratheon | 🦌 | The Stormlands | Storm's End |
-| Targaryen | 🐉 | Dragonstone | Dragonstone |
-| Greyjoy | 🦑 | The Iron Islands | Pyke |
-| Tully | 🐟 | The Riverlands | Riverrun |
-| Arryn | 🦅 | The Vale | The Eyrie |
-| Tyrell | 🌹 | The Reach | Highgarden |
-| Martell | ☀️ | Dorne | Sunspear |
+## Tech Stack
 
----
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Static assets for map and house sigils
+- Vercel for deployment
 
-## 📁 Project Structure
+## Project Structure
 
+```text
+GoT-Lore-Map/
+|-- index.html
+|-- style.css
+|-- app.js
+|-- data.js
+`-- assets/
+    |-- map.webp
+    |-- book-page.jpg
+    `-- sigils/
 ```
-goat/
-├── index.html    # HTML structure and page layout
-├── style.css     # All styling — medieval theme, animations, layout
-├── data.js       # Houses, characters, and locations data
-└── app.js        # Navigation, rendering, and search logic
-```
 
----
+## Learning Outcomes
 
-## 🚀 Live Demo
+- Built a multi-page single-page experience using vanilla JavaScript state and rendering.
+- Practiced DOM rendering, search filtering, map interactions, zooming, and panning.
+- Organized structured lore data in a separate JavaScript file.
+- Improved responsive layout, animation timing, and visual polish without a framework.
 
-> Deployed on Vercel — [go-t-lore-map.vercel.app](https://go-t-lore-map.vercel.app/)
-
----
-
-## 🛠️ Tech Stack
-
-- **HTML5** — Semantic structure
-- **CSS3** — Custom animations, CSS variables, responsive layout
-- **Vanilla JavaScript** — Zero dependencies, no frameworks
-- **Google Fonts** — Cinzel Decorative, IM Fell English
-- **Vercel** — Deployment
-
----
-
-## 📖 Characters Included
-
-35+ characters with full profiles including:
-
-**House Stark** — Eddard, Robb, Sansa, Arya, Bran, Catelyn  
-**House Lannister** — Tywin, Cersei, Jaime, Tyrion  
-**House Baratheon** — Robert, Stannis, Renly, Gendry  
-**House Targaryen** — Daenerys, Viserys, Rhaegar, Aerys  
-**House Greyjoy** — Balon, Theon, Yara, Euron  
-**House Tully** — Hoster, Edmure, Brynden, Lysa  
-**House Arryn** — Jon Arryn, Lysa, Robin  
-**House Tyrell** — Mace, Olenna, Margaery, Loras  
-**House Martell** — Doran, Oberyn, Elia, Arianne  
-
----
-
-## ⚙️ Run Locally
-
-Just open `index.html` in any browser — no server or build step needed.
+## Run Locally
 
 ```bash
 git clone https://github.com/Ishan-113/GoT-Lore-Map.git
 cd GoT-Lore-Map
-# Open index.html in your browser
 ```
 
----
+Open `index.html` in your browser. No build step is required.
 
-## 📌 Note
+## Note
 
-All character descriptions and lore summaries are written in original words. No copyrighted text from the books or show has been reproduced.
-
----
-
-*"When you play the game of thrones, you win or you die."*
+This is a fan-made educational frontend project. Character summaries and location descriptions are written in original words for portfolio demonstration.
