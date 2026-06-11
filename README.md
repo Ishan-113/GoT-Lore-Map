@@ -20,19 +20,18 @@ content in a responsive fantasy-themed interface.
 - Interactive lore map with clickable locations across Westeros and Essos.
 - House pages with sigils, words, seats, regions, and member lists.
 - Character profile pages with biography-style lore summaries.
-- Search and archive-style pages for houses, characters, and locations.
+- Search pages for houses, characters, and locations.
 - Lore timeline view for major events.
 - Responsive design for desktop and mobile screens.
-- Custom medieval visual style using CSS animations, parchment textures, and
-  themed typography.
+- Custom medieval visual style with CSS animations and themed typography.
 
 ## Tech Stack
 
 - HTML5
 - CSS3
 - Vanilla JavaScript
-- Static assets for map and house sigils
-- Vercel for deployment
+- Static image assets
+- Vercel
 
 ## Project Structure
 
@@ -50,13 +49,11 @@ GoT-Lore-Map/
 
 ## Learning Outcomes
 
-- Built a multi-page single-page experience using vanilla JavaScript state and
-  rendering.
-- Practiced DOM rendering, search filtering, map interactions, zooming, and
-  panning.
-- Organized structured lore data in a separate JavaScript file.
-- Improved responsive layout, animation timing, and visual polish without a
-  framework.
+- Built a multi-page single-page experience with vanilla JavaScript.
+- Practiced DOM rendering and search filtering.
+- Added map interactions, zooming, and panning.
+- Organized structured project data in a separate JavaScript file.
+- Improved responsive layout and visual polish without a framework.
 
 ## Run Locally
 
