@@ -1,8 +1,11 @@
 # GoT Lore Map
 
 [![HTML](https://img.shields.io/badge/HTML5-Markup-e34f26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+
 [![CSS](https://img.shields.io/badge/CSS3-Styling-1572b6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+
 [![JavaScript](https://img.shields.io/badge/JavaScript-Vanilla-f7df1e?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+
 [![Vercel](https://img.shields.io/badge/Live-Vercel-000000?logo=vercel)](https://go-t-lore-map.vercel.app/)
 
 An interactive Game of Thrones lore map built with vanilla HTML, CSS, and JavaScript. The project presents houses, locations, character profiles, search, and timeline content in a responsive fantasy-themed interface.
